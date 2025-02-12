@@ -13,8 +13,9 @@
     "python.analysis.indexing": true,
     "python.analysis.packageIndexDepths": [
       { "name": "fastapi", "depth": 3, "includeAllSymbols": true },
-      { "name": "pydantic", "depth": 1, "includeAllSymbols": true },
       { "name": "sqlalchemy", "depth": 3, "includeAllSymbols": true },
+      { "name": "pydantic", "depth": 1, "includeAllSymbols": true },
+      { "name": "pydantic_settings", "depth": 1, "includeAllSymbols": true },
     ],
     "[python]": {
       "editor.formatOnSave": true,
