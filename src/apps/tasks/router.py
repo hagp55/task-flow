@@ -6,7 +6,8 @@ from fastapi import APIRouter, Depends, Response, status
 from src.apps.tasks.models import Task
 from src.apps.tasks.repositories import TaskRepository
 from src.apps.tasks.schemas import TaskIn, TaskOut
-from src.dependencies import get_tasks_repository
+from src.apps.tasks.services import TasksService
+from src.dependencies import get_tasks_repository, get_tasks_service
 
 __all__ = ("router",)
 
@@ -25,9 +26,9 @@ async def create_task(
 
 @router.get("", response_model=list[TaskOut], status_code=status.HTTP_200_OK)
 async def get_tasks(
-    task_repository: Annotated[TaskRepository, Depends(get_tasks_repository)],
+    task_service: Annotated[TasksService, Depends(get_tasks_service)],
 ) -> list[Task]:
-    return task_repository.get_all()
+    return task_service.get_all()  # type: ignore
 
 
 @router.get("/{task_id}", response_model=TaskOut, status_code=status.HTTP_200_OK)

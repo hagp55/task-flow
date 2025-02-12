@@ -9,6 +9,9 @@ def _init_loggers(app) -> None:
     set_logging()
 
 
+# def _init_cache(app) -> None:
+
+
 def _init_routers(app) -> None:
     app.include_router(api_router)
 

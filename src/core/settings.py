@@ -21,6 +21,16 @@ class Settings(BaseSettings):
     ENVIRONMENT: Literal["dev", "prod"] = "dev"
 
 
+class Cache(BaseSettings):
+    model_config = SettingsConfigDict(
+        extra="ignore",
+        case_sensitive=False,
+        env_ignore_empty=True,
+        env_file_encoding="utf-8",
+        env_file=Path(__file__).parents[2] / ".env",
+    )
+
+
 class DB(BaseSettings):
     model_config = SettingsConfigDict(
         extra="ignore",

@@ -24,7 +24,10 @@ class TaskRepository:
                 .returning(Task)
             )
             logger.debug(statement.compile(engine, compile_kwargs={"literal_binds": True}))
-            return session.execute(statement).scalar_one()
+            task = session.execute(statement).scalar_one()
+            session.commit()
+            logger.debug(task)
+            return task
 
     def get_all(self) -> list[Task]:
         with self.db_session() as session:
