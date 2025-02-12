@@ -29,6 +29,9 @@ class Cache(BaseSettings):
         env_file_encoding="utf-8",
         env_file=Path(__file__).parents[2] / ".env",
     )
+    CACHE_HOST: str = "0.0.0.0"
+    CACHE_PORT: int = 6379
+    CACHE_DB: int = 0
 
 
 class DB(BaseSettings):
@@ -60,5 +63,10 @@ def get_db_settings() -> Settings:
     return DB()  # type: ignore
 
 
+def get_cache_settings() -> Settings:
+    return Cache()  # type: ignore
+
+
 settings: Settings = get_settings()
-db = get_db_settings()  # type: ignore
+db: DB = get_db_settings()  # type: ignore
+cache: Cache = get_cache_settings()  # type: ignore

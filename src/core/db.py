@@ -3,7 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncAttrs
 from sqlalchemy.orm import DeclarativeBase, declared_attr, sessionmaker
 
 from src.core.settings import db
-from src.core.utils import camel_to_snake, singular_to_plural
+from src.core.utils.db import camel_to_snake, singular_to_plural
 
 engine: Engine = create_engine(url=db.DNS)
 session_factory = sessionmaker(bind=engine)
