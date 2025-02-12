@@ -5,7 +5,7 @@ from sqlalchemy.orm import DeclarativeBase, declared_attr, sessionmaker
 from src.core.settings import db
 from src.core.utils.db import camel_to_snake, singular_to_plural
 
-engine: Engine = create_engine(url=db.DNS)
+engine: Engine = create_engine(url=db.DNS_DB)
 session_factory = sessionmaker(bind=engine)
 
 POSTGRES_INDEXES_NAMING_CONVENTION = {

@@ -15,7 +15,8 @@ services:
       test: "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"
       timeout: 2s
     volumes:
-      - pgdata:/var/lib/postgresql/data/
+      - pg_data:/var/lib/postgresql/data/
+      - ./init-test_db.sh:/docker-entrypoint-initdb.d/init-test_db.sh
     ports:
       - "${POSTGRES_PORT}:5432"
     restart: unless-stopped
@@ -28,4 +29,4 @@ services:
     restart: unless-stopped
 
 volumes:
-  pgdata:
+  pg_data:
