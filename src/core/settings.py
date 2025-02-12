@@ -21,6 +21,21 @@ class Settings(BaseSettings):
     ENVIRONMENT: Literal["dev", "prod"] = "dev"
 
 
+class DB(BaseSettings):
+    model_config = SettingsConfigDict(
+        extra="ignore",
+        case_sensitive=False,
+        env_ignore_empty=True,
+        env_file_encoding="utf-8",
+        env_file=Path(__file__).parents[2] / ".env",
+    )
+    POSTGRES_HOST: str
+    POSTGRES_PORT: int
+    POSTGRES_DB: str
+    POSTGRES_USER: str
+    POSTGRES_PASSWORD: str
+
+
 def get_settings() -> Settings:
     return Settings()  # type: ignore
 

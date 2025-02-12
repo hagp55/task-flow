@@ -14,7 +14,35 @@ uninstall: ## Uninstall a dependency using poetry
 	@echo "Uninstall dependency $(LIBRARY)"
 	poetry remove $(LIBRARY)
 
+# DOCKER
+up:
+	docker compose up -d
 
+down:
+	docker compose down
+
+
+# ALEMBIC MIGRATIONS
+alembic-migration-init: # Create alembic template for migrations
+	alembic init migrations
+
+alembic-migration-history: # Show all alembic migrations
+	alembic history --verbose
+
+alembic-migration-generate: # Generate migrations with message
+	alembic revision --autogenerate -m "$(m)"
+
+alembic-migration-upgrade: # Apply all migrations
+	alembic upgrade head
+
+alembic-migration-downgrade: # downgrade -1 migration
+	alembic downgrade -1
+
+alembic-migration-downgrade-base: # downgrade all migrations
+	alembic downgrade base
+
+
+# LINTERS
 ruff-check:
 	poetry run ruff check .
 
