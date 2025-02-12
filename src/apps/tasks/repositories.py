@@ -1,11 +1,11 @@
 import logging
 
-from sqlalchemy import delete, select
+from sqlalchemy import delete, insert, select, update
 from sqlalchemy.orm import sessionmaker
 
 from src.apps.tasks.models import Category, Task
 from src.apps.tasks.schemas import TaskIn
-from src.core.db import engine, session_factory
+from src.core.db import engine
 
 logger: logging.Logger = logging.getLogger(__name__)
 
@@ -14,46 +14,58 @@ class TaskRepository:
     def __init__(self, session: sessionmaker) -> None:
         self.db_session: sessionmaker = session
 
-    def get_tasks(self):
+    def create(self, payload: TaskIn) -> Task:
         with self.db_session() as session:
-            query = select(Task)
-            print(query.compile(engine, compile_kwargs={"literal_binds": True}))
-            tasks = session.execute(query).scalars().all()
-        return tasks
+            statement = (
+                insert(Task)
+                .values(
+                    payload.model_dump(),
+                )
+                .returning(Task)
+            )
+            logger.debug(statement.compile(engine, compile_kwargs={"literal_binds": True}))
+            return session.execute(statement).scalar_one()
 
-    def get_task(self, task_id: int):
+    def get_all(self) -> list[Task]:
         with self.db_session() as session:
-            query = select(Task).where(Task.id == task_id)
-            print(query.compile(engine, compile_kwargs={"literal_binds": True}))
-            task = session.execute(query).scalar_one_or_none()
-        return task
+            statement = select(Task)
+            logger.debug(statement.compile(engine, compile_kwargs={"literal_binds": True}))
+            return list(session.execute(statement).scalars().all())
 
-    def create_task(self, task: TaskIn):
+    def get(self, task_id: int) -> Task:
         with self.db_session() as session:
-            session.add(task)
-            session.commit()
+            statement = select(Task).where(Task.id == task_id)
+            logger.debug(statement.compile(engine, compile_kwargs={"literal_binds": True}))
+            return session.execute(statement).scalar_one_or_none()
 
-    def delete_task(self, task_id: int):
-        with self.db_session() as session:
-            query = delete(Task).where(Task.id == task_id)
-            print(query.compile(engine, compile_kwargs={"literal_binds": True}))
-            session.execute(query)
-            session.commit()
-
-    def get_task_by_category_name(self, category_name: str):
+    def get_tasks_by_category_name(self, category_name: str) -> list[Task]:
         with self.db_session() as session:
             query = (
                 select(Task)
-                .join(
-                    Category,
-                    Task.category_id == Category.id,
-                )
+                .join(Category, Task.category_id == Category.id)
                 .where(Category.name == category_name)
             )
-            print(query.compile(engine, compile_kwargs={"literal_binds": True}))
-            tasks = session.execute(query).scalars().all()
-            return tasks
+            logger.debug(query.compile(engine, compile_kwargs={"literal_binds": True}))
+            return session.execute(query).scalars().all()
 
+    def update(self, task_id: int, payload: TaskIn) -> Task:
+        with self.db_session() as session:
+            query = (
+                update(Task)
+                .where(
+                    Task.id == task_id,
+                )
+                .values(payload.model_dump())
+                .returning(Task.id)
+            )
+            logger.debug(query.compile(engine, compile_kwargs={"literal_binds": True}))
+            task_id = session.execute(query).scalar_one_or_none()
+            session.commit()
+            return self.get(task_id)
 
-def get_tasks_repository() -> TaskRepository:
-    return TaskRepository(session_factory)
+    def delete(self, task_id: int) -> bool:
+        with self.db_session() as session:
+            statement = delete(Task).where(Task.id == task_id)
+            logger.debug(statement.compile(engine, compile_kwargs={"literal_binds": True}))
+            session.execute(statement).commit()
+            return True

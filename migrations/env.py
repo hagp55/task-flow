@@ -4,14 +4,14 @@ from alembic import context
 from sqlalchemy import engine_from_config, pool
 
 from src.apps.tasks.models import Category, Task  # noqa
-from src.core.db import Base, db_path
+from src.core.db import Base, db
 
 config = context.config
 
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
-config.set_main_option("sqlalchemy.url", db_path)
+config.set_main_option("sqlalchemy.url", db.DNS)
 
 target_metadata = Base.metadata
 

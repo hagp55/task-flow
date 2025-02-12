@@ -1,0 +1,24 @@
+services:
+  pomodoro_db:
+    image: postgres:16.3-alpine
+    container_name: pomodoro_db_container
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_PORT: ${POSTGRES_PORT}
+    env_file:
+      - .env
+    healthcheck:
+      interval: 10s
+      retries: 10
+      test: "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"
+      timeout: 2s
+    volumes:
+      - pgdata:/var/lib/postgresql/data/
+    ports:
+      - "${POSTGRES_PORT}:5432"
+    restart: unless-stopped
+
+volumes:
+  pgdata:

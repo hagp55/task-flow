@@ -35,9 +35,20 @@ class DB(BaseSettings):
     POSTGRES_USER: str
     POSTGRES_PASSWORD: str
 
+    SYNC_PROVIDER: str = "postgresql+psycopg2"
+
+    @property
+    def DNS(self) -> str:
+        return f"{self.SYNC_PROVIDER}://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}@{self.POSTGRES_HOST}:{self.POSTGRES_PORT}/{self.POSTGRES_DB}"
+
 
 def get_settings() -> Settings:
     return Settings()  # type: ignore
 
 
+def get_db_settings() -> Settings:
+    return DB()  # type: ignore
+
+
 settings: Settings = get_settings()
+db = get_db_settings()  # type: ignore

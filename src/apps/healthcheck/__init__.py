@@ -1,1 +1,1 @@
-from src.apps.healthcheck.route import router as healthcheck_router
+from src.apps.healthcheck.router import router as healthcheck_router

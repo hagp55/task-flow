@@ -2,7 +2,6 @@ from src.core import schemas
 
 
 class TaskIn(schemas.InputApiSchema):
-    id: int
     name: str
     pomodoro_count: int
     category_id: int
