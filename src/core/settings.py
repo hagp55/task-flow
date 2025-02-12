@@ -1,4 +1,5 @@
 from pathlib import Path
+from typing import Literal
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -17,6 +18,7 @@ class Settings(BaseSettings):
     SECRET_KEY: str
     DEBUG: bool = False
     SQLITE_DB_NAME: str = "db.sqlite3"
+    ENVIRONMENT: Literal["dev", "prod"] = "dev"
 
 
 def get_settings() -> Settings:

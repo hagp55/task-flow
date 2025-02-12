@@ -1,3 +1,4 @@
+import logging
 from sqlite3 import Connection, Cursor
 
 from fastapi import APIRouter, Response, status
@@ -9,6 +10,7 @@ __all__ = ("router",)
 
 
 router = APIRouter(prefix="/tasks", tags=["Tasks"])
+logger = logging.getLogger(__name__)
 
 
 @router.post(
