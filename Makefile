@@ -14,6 +14,7 @@ uninstall: ## Uninstall a dependency using poetry
 	@echo "Uninstall dependency $(LIBRARY)"
 	poetry remove $(LIBRARY)
 
+
 # DOCKER
 up:
 	docker compose up -d
@@ -48,6 +49,13 @@ ruff-check:
 
 ruff-fix:
 	poetry run ruff check . --fix
+
+
+# TESTS
+.PHONY: tests
+tests: # Run all tests
+	pytest tests
+
 
 help: ## Show this help message
 	@echo "Usage: make [command]"

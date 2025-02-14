@@ -5,6 +5,7 @@ from alembic import context
 from sqlalchemy import engine_from_config, pool
 
 from src.apps.tasks.models import Category, Task  # noqa
+from src.apps.users.models import User  # noqa
 from src.core.db import Base, db
 
 config = context.config
