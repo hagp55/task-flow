@@ -16,3 +16,7 @@ class CacheTasks:
         tasks_json: list[str] = [task.model_dump_json() for task in tasks]
         async with self.redis as redis:
             await redis.lpush("tasks", *tasks_json)
+
+    async def delete(self):
+        async with self.redis as redis:
+            await redis.delete("tasks")

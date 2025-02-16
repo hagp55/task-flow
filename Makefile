@@ -7,7 +7,7 @@ run: ## Run the application using uvicorn
 	poetry run uvicorn src.main:app --host $(HOST) --port $(PORT) --reload
 
 run-gunicorn: ## Run the application using gunicorn
-	poetry run gunicorn src.main:app -c gunicorn.conf.py --reload
+	poetry run gunicorn src.main:app -c src/gunicorn.conf.py --reload
 
 install: ## Install a dependency using poetry
 	@echo "Installing dependency $(LIBRARY)"

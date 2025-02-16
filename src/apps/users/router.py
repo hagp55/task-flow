@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, status
 
 from src.apps.users.schemas import UserIn, UserLoginOut
 from src.apps.users.services import UsersService
-from src.dependencies import get_users_service
+from src.core.dependencies import get_users_service
 
 __all__ = ("router",)
 

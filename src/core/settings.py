@@ -21,6 +21,7 @@ class Settings(BaseSettings):
     APP_HOST: str = "localhost"
     SECRET_KEY: str
     ENVIRONMENT: Literal["dev", "prod", "tests"] = "dev"
+    ALLOW_ORIGINS_URLS: list["str"] = []
 
     # JTW TOKEN
     JWT_UPDATE_TIME: int = 24

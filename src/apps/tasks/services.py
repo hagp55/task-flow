@@ -24,8 +24,15 @@ class TasksService:
             await self.cache_task_repository.create(tasks_schema)
         return await self.task_repository.get_all()
 
+    async def get(self, task_id) -> Task:
+        task: Task = await self.task_repository.get(task_id)
+        if not task:
+            raise TaskNotFoundException
+        return task
+
     async def create(self, user_id: int, payload: TaskIn) -> TaskOut:
         task: Task = await self.task_repository.create(user_id, payload)
+        await self.cache_task_repository.delete()
         return TaskOut.model_validate(task)
 
     async def update(self, user_id: int, task_id, payload: TaskIn) -> TaskOut:

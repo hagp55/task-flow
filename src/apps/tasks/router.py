@@ -4,10 +4,9 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException, Response, status
 
 from src.apps.tasks.models import Task
-from src.apps.tasks.repositories import TaskRepository
 from src.apps.tasks.schemas import TaskIn, TaskOut
 from src.apps.tasks.services import TasksService
-from src.dependencies import get_request_user_id, get_tasks_repository, get_tasks_service
+from src.core.dependencies import get_request_user_id, get_tasks_service
 from src.exceptions import TaskNotFoundException
 
 __all__ = ("router",)
@@ -36,9 +35,15 @@ async def get_tasks(
 @router.get("/{task_id}", response_model=TaskOut, status_code=status.HTTP_200_OK)
 async def get_task(
     task_id: int,
-    task_repository: Annotated[TaskRepository, Depends(get_tasks_repository)],
+    task_service: Annotated[TasksService, Depends(get_tasks_service)],
 ) -> Task:
-    return await task_repository.get(task_id)
+    try:
+        return await task_service.get(task_id)
+    except TaskNotFoundException as e:
+        raise HTTPException(
+            detail=str(e.detail),
+            status_code=status.HTTP_404_NOT_FOUND,
+        )
 
 
 @router.put("/{task_id}", response_model=TaskOut, status_code=status.HTTP_200_OK)
@@ -48,7 +53,13 @@ async def update_task(
     task_service: Annotated[TasksService, Depends(get_tasks_service)],
     user_id: int = Depends(get_request_user_id),
 ) -> TaskOut:
-    return await task_service.update(user_id, task_id, payload)
+    try:
+        return await task_service.update(user_id, task_id, payload)
+    except TaskNotFoundException as e:
+        raise HTTPException(
+            detail=str(e.detail),
+            status_code=status.HTTP_404_NOT_FOUND,
+        )
 
 
 @router.delete("/{task_id}", response_class=Response, status_code=status.HTTP_204_NO_CONTENT)

@@ -6,7 +6,7 @@ from fastapi.responses import RedirectResponse
 
 from src.apps.auth.services import AuthService
 from src.apps.users.schemas import UserIn, UserLoginOut
-from src.dependencies import get_auth_service
+from src.core.dependencies import get_auth_service
 from src.exceptions import UserNotCorrectPasswordException, UserNotFoundException
 
 router = APIRouter(prefix="/auth", tags=["Auth"])
