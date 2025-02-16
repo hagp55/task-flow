@@ -75,7 +75,7 @@ class DB(BaseSettings):
 
     @property
     def DNS_TEST_DB(self) -> str:
-        return f"{self.SYNC_PROVIDER}://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}@{self.POSTGRES_HOST}:{self.POSTGRES_PORT}/test_{self.POSTGRES_DB}"
+        return f"{self.ASYNC_PROVIDER}://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}@{self.POSTGRES_HOST}:{self.POSTGRES_PORT}/test_{self.POSTGRES_DB}"
 
 
 def get_settings() -> Settings:
