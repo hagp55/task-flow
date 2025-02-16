@@ -19,6 +19,7 @@ class UsersRepository:
         password: str | None = None,
         email: str | None = None,
         google_access_token: str | None = None,
+        yandex_access_token: str | None = None,
         first_name: str | None = None,
         last_name: str | None = None,
     ) -> User | None:
@@ -29,6 +30,7 @@ class UsersRepository:
                 password=password,
                 email=email,
                 google_access_token=google_access_token,
+                yandex_access_token=yandex_access_token,
                 first_name=first_name,
                 last_name=last_name,
             )

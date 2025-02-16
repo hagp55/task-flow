@@ -9,5 +9,6 @@ class User(Base):
     password: Mapped[str | None]
     email: Mapped[str | None]
     google_access_token: Mapped[str | None]
+    yandex_access_token: Mapped[str | None]
     first_name: Mapped[str | None]
     last_name: Mapped[str | None]

@@ -5,11 +5,12 @@ from typing import Any
 
 from jose import JWTError, jwt
 
-from src.apps.auth.schemas import GoogleUserDataOut
+from src.apps.auth.schemas import GoogleUserDataOut, YandexUserDataOut
 from src.apps.users.models import User
 from src.apps.users.repositories import UsersRepository
 from src.apps.users.schemas import UserLoginOut
 from src.clients.google import GoogleClient
+from src.clients.yandex import YandexClient
 from src.core.settings import settings
 from src.exceptions import (
     TokenExpiredException,
@@ -25,6 +26,7 @@ logger = logging.getLogger(__name__)
 class AuthService:
     users_repository: UsersRepository
     google_client: GoogleClient
+    yandex_client: YandexClient
 
     def login(self, username: str, password: str) -> UserLoginOut:
         user: User | None = self.users_repository.get_by_username(
@@ -50,6 +52,28 @@ class AuthService:
             email=user_data.email,
             first_name=user_data.name,
             google_access_token=user_data.google_access_token,
+        )
+        return UserLoginOut(
+            id=user.id,
+            access_token=self.generate_access_token(user.id),
+        )
+
+    def get_yandex_redirect_url(self) -> str:
+        return settings.YANDEX_REDIRECT_URL
+
+    def yandex_auth(self, code: str):
+        user_data: YandexUserDataOut = self.yandex_client.get_user_info(code)
+        if user := self.users_repository.get_user_by_email(
+            email=user_data.email,
+        ):
+            return UserLoginOut(
+                id=user.id,
+                access_token=self.generate_access_token(user.id),
+            )
+        user: User | None = self.users_repository.create(
+            email=user_data.email,
+            first_name=user_data.name,
+            yandex_access_token=user_data.access_token,
         )
         return UserLoginOut(
             id=user.id,

@@ -10,7 +10,7 @@ from src.dependencies import get_auth_service
 from src.exceptions import UserNotCorrectPasswordException, UserNotFoundException
 
 router = APIRouter(prefix="/auth", tags=["Auth"])
-logging = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 
 
 @router.post("/login", response_model=UserLoginOut, status_code=status.HTTP_200_OK)
@@ -35,7 +35,7 @@ def login_user_with_google(
     auth_service: Annotated[AuthService, Depends(get_auth_service)],
 ) -> RedirectResponse:
     redirect_url: str = auth_service.get_google_redirect_url()
-    logging.debug(redirect_url)
+    logger.debug(redirect_url)
     return RedirectResponse(url=redirect_url)
 
 
@@ -45,3 +45,21 @@ def google_auth(
     code: str,
 ):
     return auth_service.google_auth(code=code)
+
+
+@router.get("/login/yandex", response_class=RedirectResponse)
+def login_user_with_yandex(
+    auth_service: Annotated[AuthService, Depends(get_auth_service)],
+) -> RedirectResponse:
+    redirect_url: str = auth_service.get_yandex_redirect_url()
+    logger.debug(redirect_url)
+    return RedirectResponse(url=redirect_url)
+
+
+@router.get("/yandex")
+def yandex_auth(
+    auth_service: Annotated[AuthService, Depends(get_auth_service)],
+    code: str,
+):
+    logger.debug(code)
+    return auth_service.yandex_auth(code=code)
