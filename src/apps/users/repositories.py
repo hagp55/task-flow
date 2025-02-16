@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 class UsersRepository:
     db_session: sessionmaker
 
-    def create(
+    async def create(
         self,
         username: str | None = None,
         password: str | None = None,

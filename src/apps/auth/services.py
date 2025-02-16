@@ -28,18 +28,18 @@ class AuthService:
     google_client: GoogleClient
     yandex_client: YandexClient
 
-    def login(self, username: str, password: str) -> UserLoginOut:
+    async def login(self, username: str, password: str) -> UserLoginOut:
         user: User | None = self.users_repository.get_by_username(
             username=username,
         )
-        self._validate_auth_user(user, password)
+        await self._validate_auth_user(user, password)
         access_token: str = self.generate_access_token(user_id=user.id)
         return UserLoginOut(id=user.id, access_token=access_token)
 
-    def get_google_redirect_url(self) -> str:
+    async def get_google_redirect_url(self) -> str:
         return settings.GOOGLE_REDIRECT_URL
 
-    def google_auth(self, code: str):
+    async def google_auth(self, code: str):
         user_data: GoogleUserDataOut = self.google_client.get_user_info(code)
         if user := self.users_repository.get_user_by_email(
             email=user_data.email,
@@ -48,7 +48,7 @@ class AuthService:
                 id=user.id,
                 access_token=self.generate_access_token(user.id),
             )
-        user: User | None = self.users_repository.create(
+        user: User | None = await self.users_repository.create(
             email=user_data.email,
             first_name=user_data.name,
             google_access_token=user_data.google_access_token,
@@ -58,10 +58,10 @@ class AuthService:
             access_token=self.generate_access_token(user.id),
         )
 
-    def get_yandex_redirect_url(self) -> str:
+    async def get_yandex_redirect_url(self) -> str:
         return settings.YANDEX_REDIRECT_URL
 
-    def yandex_auth(self, code: str):
+    async def yandex_auth(self, code: str):
         user_data: YandexUserDataOut = self.yandex_client.get_user_info(code)
         if user := self.users_repository.get_user_by_email(
             email=user_data.email,
@@ -70,7 +70,7 @@ class AuthService:
                 id=user.id,
                 access_token=self.generate_access_token(user.id),
             )
-        user: User | None = self.users_repository.create(
+        user: User | None = await self.users_repository.create(
             email=user_data.email,
             first_name=user_data.name,
             yandex_access_token=user_data.access_token,
@@ -81,7 +81,7 @@ class AuthService:
         )
 
     @staticmethod
-    def _validate_auth_user(user: User, password: str) -> None:
+    async def _validate_auth_user(user: User, password: str) -> None:
         if not user:
             raise UserNotFoundException
         if user.password != password:

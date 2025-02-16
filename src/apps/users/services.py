@@ -11,8 +11,8 @@ class UsersService:
     users_repository: UsersRepository
     auth_service: AuthService
 
-    def create(self, username: str, password: str) -> UserLoginOut:
-        user: User | None = self.users_repository.create(
+    async def create(self, username: str, password: str) -> UserLoginOut:
+        user: User | None = await self.users_repository.create(
             username=username,
             password=password,
         )

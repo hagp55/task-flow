@@ -14,12 +14,12 @@ logger = logging.getLogger(__name__)
 
 
 @router.post("/login", response_model=UserLoginOut, status_code=status.HTTP_200_OK)
-def login_user(
+async def login_user(
     payload: UserIn,
     auth_service: Annotated[AuthService, Depends(get_auth_service)],
 ) -> UserLoginOut:
     try:
-        return auth_service.login(
+        return await auth_service.login(
             payload.username,
             payload.password,
         )
@@ -31,35 +31,34 @@ def login_user(
 
 
 @router.get("/login/google", response_class=RedirectResponse)
-def login_user_with_google(
+async def login_user_with_google(
     auth_service: Annotated[AuthService, Depends(get_auth_service)],
 ) -> RedirectResponse:
-    redirect_url: str = auth_service.get_google_redirect_url()
+    redirect_url: str = await auth_service.get_google_redirect_url()
     logger.debug(redirect_url)
     return RedirectResponse(url=redirect_url)
 
 
 @router.get("/google")
-def google_auth(
+async def google_auth(
     auth_service: Annotated[AuthService, Depends(get_auth_service)],
     code: str,
-):
-    return auth_service.google_auth(code=code)
+) -> UserLoginOut:
+    return await auth_service.google_auth(code=code)
 
 
 @router.get("/login/yandex", response_class=RedirectResponse)
-def login_user_with_yandex(
+async def login_user_with_yandex(
     auth_service: Annotated[AuthService, Depends(get_auth_service)],
 ) -> RedirectResponse:
-    redirect_url: str = auth_service.get_yandex_redirect_url()
+    redirect_url: str = await auth_service.get_yandex_redirect_url()
     logger.debug(redirect_url)
     return RedirectResponse(url=redirect_url)
 
 
 @router.get("/yandex")
-def yandex_auth(
+async def yandex_auth(
     auth_service: Annotated[AuthService, Depends(get_auth_service)],
     code: str,
-):
-    logger.debug(code)
-    return auth_service.yandex_auth(code=code)
+) -> UserLoginOut:
+    return await auth_service.yandex_auth(code=code)

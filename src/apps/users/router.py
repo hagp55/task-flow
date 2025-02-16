@@ -13,11 +13,11 @@ router = APIRouter(prefix="/users", tags=["Users"])
 
 
 @router.post("/", response_model=UserLoginOut, status_code=status.HTTP_201_CREATED)
-def create_user(
+async def create_user(
     payload: UserIn,
     users_service: Annotated[UsersService, Depends(get_users_service)],
 ) -> UserLoginOut:
-    return users_service.create(
+    return await users_service.create(
         payload.username,
         payload.password,
     )

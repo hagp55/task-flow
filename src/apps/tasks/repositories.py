@@ -14,7 +14,7 @@ class TaskRepository:
     def __init__(self, session: sessionmaker) -> None:
         self.db_session: sessionmaker = session
 
-    def create(self, user_id: int, payload: TaskIn) -> Task:
+    async def create(self, user_id: int, payload: TaskIn) -> Task:
         with self.db_session() as session:
             statement = (
                 insert(Task)
@@ -30,19 +30,19 @@ class TaskRepository:
             logger.debug(task)
             return task
 
-    def get_all(self) -> list[Task]:
+    async def get_all(self) -> list[Task]:
         with self.db_session() as session:
             statement = select(Task)
             logger.debug(statement.compile(engine, compile_kwargs={"literal_binds": True}))
             return list(session.execute(statement).scalars().all())
 
-    def get(self, task_id: int) -> Task:
+    async def get(self, task_id: int) -> Task:
         with self.db_session() as session:
             statement = select(Task).where(Task.id == task_id)
             logger.debug(statement.compile(engine, compile_kwargs={"literal_binds": True}))
             return session.execute(statement).scalar_one_or_none()
 
-    def get_task_by_user(self, user_id: int, task_id: int) -> Task:
+    async def get_task_by_user(self, user_id: int, task_id: int) -> Task:
         with self.db_session() as session:
             statement = select(Task).where(
                 Task.id == task_id,
@@ -51,7 +51,7 @@ class TaskRepository:
             logger.debug(statement.compile(engine, compile_kwargs={"literal_binds": True}))
             return session.execute(statement).scalar_one_or_none()
 
-    def get_tasks_by_category_name(self, category_name: str) -> list[Task]:
+    async def get_tasks_by_category_name(self, category_name: str) -> list[Task]:
         with self.db_session() as session:
             query = (
                 select(Task)
@@ -61,7 +61,7 @@ class TaskRepository:
             logger.debug(query.compile(engine, compile_kwargs={"literal_binds": True}))
             return session.execute(query).scalars().all()
 
-    def update(self, user_id: int, task_id: int, payload: TaskIn) -> Task:
+    async def update(self, user_id: int, task_id: int, payload: TaskIn) -> Task:
         with self.db_session() as session:
             query = (
                 update(Task)
@@ -77,9 +77,9 @@ class TaskRepository:
             logger.debug(query.compile(engine, compile_kwargs={"literal_binds": True}))
             task_id = session.execute(query).scalar_one_or_none()
             session.commit()
-            return self.get(task_id)
+            return await self.get(task_id)
 
-    def delete(self, task_id: int):
+    async def delete(self, task_id: int):
         with self.db_session() as session:
             statement = delete(Task).where(Task.id == task_id)
             logger.debug(statement.compile(engine, compile_kwargs={"literal_binds": True}))
