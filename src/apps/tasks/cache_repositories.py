@@ -8,11 +8,11 @@ class CacheTasks:
         self.redis: Redis = redis
 
     async def get_all(self) -> list[TaskOut]:
-        with self.redis as redis:
-            tasks_json = redis.lrange("tasks", 0, -1)
+        async with self.redis as redis:
+            tasks_json = await redis.lrange("tasks", 0, -1)
             return [TaskOut.model_validate_json(task) for task in tasks_json]  # type: ignore
 
     async def create(self, tasks: list[TaskOut]) -> None:
         tasks_json: list[str] = [task.model_dump_json() for task in tasks]
-        with self.redis as redis:
-            redis.lpush("tasks", *tasks_json)
+        async with self.redis as redis:
+            await redis.lpush("tasks", *tasks_json)
