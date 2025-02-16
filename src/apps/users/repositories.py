@@ -13,13 +13,12 @@ logger = logging.getLogger(__name__)
 class UsersRepository:
     db_session: sessionmaker
 
-    def create(self, username: str, password: str, access_token: str) -> User | None:
+    def create(self, username: str, password: str) -> User | None:
         statement = (
             insert(User)
             .values(
                 username=username,
                 password=password,
-                access_token=access_token,
             )
             .returning(User.id)
         )
