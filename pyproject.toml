@@ -16,6 +16,7 @@ alembic = "^1.14.1"
 psycopg2-binary = "^2.9.10"
 redis = "^5.2.1"
 python-jose = {extras = ["crypography"], version = "^3.3.0"}
+requests = "^2.32.3"
 
 
 [tool.poetry.group.linter.dependencies]

@@ -13,12 +13,24 @@ logger = logging.getLogger(__name__)
 class UsersRepository:
     db_session: sessionmaker
 
-    def create(self, username: str, password: str) -> User | None:
+    def create(
+        self,
+        username: str | None = None,
+        password: str | None = None,
+        email: str | None = None,
+        google_access_token: str | None = None,
+        first_name: str | None = None,
+        last_name: str | None = None,
+    ) -> User | None:
         statement = (
             insert(User)
             .values(
                 username=username,
                 password=password,
+                email=email,
+                google_access_token=google_access_token,
+                first_name=first_name,
+                last_name=last_name,
             )
             .returning(User.id)
         )
@@ -36,6 +48,12 @@ class UsersRepository:
 
     def get_by_username(self, username: str) -> User | None:
         statement = select(User).where(User.username == username)
+        logger.debug(statement)
+        with self.db_session() as session:
+            return session.execute(statement).scalar_one_or_none()
+
+    def get_user_by_email(self, email) -> User | None:
+        statement = select(User).where(User.email == email)
         logger.debug(statement)
         with self.db_session() as session:
             return session.execute(statement).scalar_one_or_none()

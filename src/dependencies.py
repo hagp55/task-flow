@@ -11,6 +11,7 @@ from src.apps.tasks.repositories import TaskRepository
 from src.apps.tasks.services import TasksService
 from src.apps.users.repositories import UsersRepository
 from src.apps.users.services import UsersService
+from src.clients.google import GoogleClient
 from src.core.db import get_session, session_factory
 from src.core.services.cache import get_redis_connection
 from src.exceptions import TokenExpiredException, TokenHasNotValidSignatureException
@@ -43,10 +44,18 @@ def get_tasks_service(
     return TasksService(task_repository, cache_task_repository)
 
 
+def get_google_client() -> GoogleClient:
+    return GoogleClient()
+
+
 def get_auth_service(
     users_repository: Annotated[UsersRepository, Depends(get_users_repository)],
+    google_client: Annotated[GoogleClient, Depends(get_google_client)],
 ) -> AuthService:
-    return AuthService(users_repository=users_repository)
+    return AuthService(
+        users_repository=users_repository,
+        google_client=google_client,
+    )
 
 
 def get_users_service(

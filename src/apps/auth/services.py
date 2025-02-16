@@ -5,9 +5,11 @@ from typing import Any
 
 from jose import JWTError, jwt
 
+from src.apps.auth.schemas import GoogleUserDataOut
 from src.apps.users.models import User
 from src.apps.users.repositories import UsersRepository
 from src.apps.users.schemas import UserLoginOut
+from src.clients.google import GoogleClient
 from src.core.settings import settings
 from src.exceptions import (
     TokenExpiredException,
@@ -22,6 +24,7 @@ logger = logging.getLogger(__name__)
 @dataclass
 class AuthService:
     users_repository: UsersRepository
+    google_client: GoogleClient
 
     def login(self, username: str, password: str) -> UserLoginOut:
         user: User | None = self.users_repository.get_by_username(
@@ -30,6 +33,28 @@ class AuthService:
         self._validate_auth_user(user, password)
         access_token: str = self.generate_access_token(user_id=user.id)
         return UserLoginOut(id=user.id, access_token=access_token)
+
+    def get_google_redirect_url(self) -> str:
+        return settings.GOOGLE_REDIRECT_URL
+
+    def google_auth(self, code: str):
+        user_data: GoogleUserDataOut = self.google_client.get_user_info(code)
+        if user := self.users_repository.get_user_by_email(
+            email=user_data.email,
+        ):
+            return UserLoginOut(
+                id=user.id,
+                access_token=self.generate_access_token(user.id),
+            )
+        user: User | None = self.users_repository.create(
+            email=user_data.email,
+            first_name=user_data.name,
+            google_access_token=user_data.google_access_token,
+        )
+        return UserLoginOut(
+            id=user.id,
+            access_token=self.generate_access_token(user.id),
+        )
 
     @staticmethod
     def _validate_auth_user(user: User, password: str) -> None:

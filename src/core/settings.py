@@ -16,14 +16,24 @@ class Settings(BaseSettings):
     model_config = config
 
     BASE_DIR: Path = Path(__file__).parents[2]
-    GOOGLE_TOKEN_ID: str
-    SECRET_KEY: str
     DEBUG: bool = False
-    SQLITE_DB_NAME: str = "db.sqlite3"
+    SECRET_KEY: str
     ENVIRONMENT: Literal["dev", "prod", "tests"] = "dev"
+
+    # JTW TOKEN
     JWT_UPDATE_TIME: int = 24
     JWT_SECRET_KEY: str = "your_secret_key"
     JWT_ALGORITHM: str = "HS256"
+
+    # OAUTH
+    GOOGLE_CLIENT_ID: str = ""
+    GOOGLE_CLIENT_SECRET: str = ""
+    GOOGLE_REDIRECT_URI: str = ""
+    GOOGLE_TOKEN_URL: str = "https://accounts.google.com/o/oauth2/token"
+
+    @property
+    def GOOGLE_REDIRECT_URL(self) -> str:
+        return f"https://accounts.google.com/o/oauth2/auth?response_type=code&client_id={self.GOOGLE_CLIENT_ID}&redirect_uri={self.GOOGLE_REDIRECT_URI}&scope=openid%20profile%20email&access_type=offline"
 
 
 class Cache(BaseSettings):
