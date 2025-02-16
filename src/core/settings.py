@@ -17,6 +17,8 @@ class Settings(BaseSettings):
 
     BASE_DIR: Path = Path(__file__).parents[2]
     DEBUG: bool = False
+    APP_PORT: int = 8000
+    APP_HOST: str = "localhost"
     SECRET_KEY: str
     ENVIRONMENT: Literal["dev", "prod", "tests"] = "dev"
 

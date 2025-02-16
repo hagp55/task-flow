@@ -9,8 +9,8 @@ from src.apps.auth.schemas import GoogleUserDataOut, YandexUserDataOut
 from src.apps.users.models import User
 from src.apps.users.repositories import UsersRepository
 from src.apps.users.schemas import UserLoginOut
-from src.clients.google import GoogleClient
-from src.clients.yandex import YandexClient
+from src.core.services.clients.google import GoogleClient
+from src.core.services.clients.yandex import YandexClient
 from src.core.settings import settings
 from src.exceptions import (
     TokenExpiredException,

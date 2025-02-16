@@ -10,10 +10,10 @@ from src.apps.tasks.repositories import TaskRepository
 from src.apps.tasks.services import TasksService
 from src.apps.users.repositories import UsersRepository
 from src.apps.users.services import UsersService
-from src.clients.google import GoogleClient
-from src.clients.yandex import YandexClient
 from src.core.db import AsyncSessionFactory, get_async_session  # noqa
 from src.core.services.cache import get_redis_connection
+from src.core.services.clients.google import GoogleClient
+from src.core.services.clients.yandex import YandexClient
 from src.exceptions import TokenExpiredException, TokenHasNotValidSignatureException
 
 logger = logging.getLogger(__name__)
@@ -29,7 +29,7 @@ def get_tasks_repository() -> TaskRepository:
 
 
 def get_cache_tasks_repository() -> CacheTasks:
-    redis_connection: Redis = get_redis_connection()
+    redis_connection: Redis = get_redis_connection()  # type: ignore
     return CacheTasks(redis_connection)
 
 
