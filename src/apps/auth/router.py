@@ -34,7 +34,7 @@ async def login_user(
 async def login_user_with_google(
     auth_service: Annotated[AuthService, Depends(get_auth_service)],
 ) -> RedirectResponse:
-    redirect_url: str = await auth_service.get_google_redirect_url()
+    redirect_url: str = auth_service.get_google_redirect_url()
     logger.debug(redirect_url)
     return RedirectResponse(url=redirect_url)
 
@@ -51,8 +51,8 @@ async def google_auth(
 async def login_user_with_yandex(
     auth_service: Annotated[AuthService, Depends(get_auth_service)],
 ) -> RedirectResponse:
-    redirect_url: str = await auth_service.get_yandex_redirect_url()
-    logger.debug(redirect_url)
+    redirect_url: str = auth_service.get_yandex_redirect_url()
+    logger.info(redirect_url)
     return RedirectResponse(url=redirect_url)
 
 

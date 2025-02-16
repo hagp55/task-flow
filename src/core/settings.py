@@ -60,12 +60,18 @@ class DB(BaseSettings):
     POSTGRES_DB: str
     POSTGRES_USER: str
     POSTGRES_PASSWORD: str
+    SQL_REQUESTS_SHOW_IN_CONSOLE: bool = False
 
     SYNC_PROVIDER: str = "postgresql+psycopg2"
+    ASYNC_PROVIDER: str = "postgresql+asyncpg"
 
     @property
     def DNS_DB(self) -> str:
         return f"{self.SYNC_PROVIDER}://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}@{self.POSTGRES_HOST}:{self.POSTGRES_PORT}/{self.POSTGRES_DB}"
+
+    @property
+    def ASYNC_DNS_DB(self) -> str:
+        return f"{self.ASYNC_PROVIDER}://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}@{self.POSTGRES_HOST}:{self.POSTGRES_PORT}/{self.POSTGRES_DB}"
 
     @property
     def DNS_TEST_DB(self) -> str:

@@ -3,7 +3,6 @@ from typing import Annotated
 
 from fastapi import Depends, HTTPException, Request, Security, security
 from redis import Redis
-from sqlalchemy.orm import Session
 
 from src.apps.auth.services import AuthService
 from src.apps.tasks.cache_repositories import CacheTasks
@@ -13,7 +12,7 @@ from src.apps.users.repositories import UsersRepository
 from src.apps.users.services import UsersService
 from src.clients.google import GoogleClient
 from src.clients.yandex import YandexClient
-from src.core.db import get_session, session_factory
+from src.core.db import AsyncSessionFactory, get_async_session  # noqa
 from src.core.services.cache import get_redis_connection
 from src.exceptions import TokenExpiredException, TokenHasNotValidSignatureException
 
@@ -22,10 +21,10 @@ reusable_oauth2 = security.HTTPBearer()
 
 
 def get_tasks_repository() -> TaskRepository:
-    return TaskRepository(session_factory)
+    return TaskRepository(AsyncSessionFactory)
 
 
-# def get_tasks_repository(db_session: Annotated[Session, Depends(get_session)]) -> TaskRepository:
+# def get_tasks_repository(db_session: Annotated[Session, Depends(get_async_session)]) -> TaskRepository:
 #     return TaskRepository(db_session)
 
 
@@ -34,8 +33,8 @@ def get_cache_tasks_repository() -> CacheTasks:
     return CacheTasks(redis_connection)
 
 
-def get_users_repository(db_session: Annotated[Session, Depends(get_session)]) -> UsersRepository:
-    return UsersRepository(db_session=session_factory)
+def get_users_repository() -> UsersRepository:
+    return UsersRepository(db_session=AsyncSessionFactory)
 
 
 def get_tasks_service(

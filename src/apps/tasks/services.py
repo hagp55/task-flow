@@ -16,13 +16,13 @@ class TasksService:
     cache_task_repository: CacheTasks
 
     async def get_all(self):
-        if cache_tasks := self.cache_task_repository.get_all():  # type: ignore
+        if cache_tasks := await self.cache_task_repository.get_all():  # type: ignore
             return cache_tasks
         tasks: list[Task] = await self.task_repository.get_all()
         if tasks:
             tasks_schema: list[TaskOut] = [TaskOut.model_validate(task) for task in tasks]
-            self.cache_task_repository.create(tasks_schema)
-        return self.task_repository.get_all()
+            await self.cache_task_repository.create(tasks_schema)
+        return await self.task_repository.get_all()
 
     async def create(self, user_id: int, payload: TaskIn) -> TaskOut:
         task: Task = await self.task_repository.create(user_id, payload)
@@ -37,6 +37,7 @@ class TasksService:
 
     async def delete(self, user_id: int, task_id) -> None:
         task: Task = await self.task_repository.get_task_by_user(user_id, task_id)
+        logger.info(task)
         if not task:
             raise TaskNotFoundException
         await self.task_repository.delete(task_id)

@@ -2,7 +2,7 @@ import logging
 from dataclasses import dataclass
 
 from sqlalchemy import insert, select
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.ext.asyncio import async_sessionmaker
 
 from src.apps.users.models import User
 
@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 @dataclass
 class UsersRepository:
-    db_session: sessionmaker
+    db_session: async_sessionmaker
 
     async def create(
         self,
@@ -37,25 +37,29 @@ class UsersRepository:
             .returning(User.id)
         )
         logger.debug(statement)
-        with self.db_session() as session:
-            user_id: int = session.execute(statement).scalar()
-            session.commit()
-            return self.get(user_id)
+        async with self.db_session() as session:
+            result = await session.execute(statement)
+            user_id: int = result.scalar()
+            await session.commit()
+            return await self.get(user_id)
 
-    def get(self, user_id) -> User | None:
+    async def get(self, user_id) -> User | None:
         statement = select(User).where(User.id == user_id)
         logger.debug(statement)
-        with self.db_session() as session:
-            return session.execute(statement).scalar_one_or_none()
+        async with self.db_session() as session:
+            result = await session.execute(statement)
+            return result.scalar()
 
-    def get_by_username(self, username: str) -> User | None:
+    async def get_by_username(self, username: str) -> User | None:
         statement = select(User).where(User.username == username)
         logger.debug(statement)
-        with self.db_session() as session:
-            return session.execute(statement).scalar_one_or_none()
+        async with self.db_session() as session:
+            result = await session.execute(statement)
+            return result.scalar()
 
-    def get_user_by_email(self, email) -> User | None:
+    async def get_user_by_email(self, email) -> User | None:
         statement = select(User).where(User.email == email)
         logger.debug(statement)
-        with self.db_session() as session:
-            return session.execute(statement).scalar_one_or_none()
+        async with self.db_session() as session:
+            result = await session.execute(statement)
+            return result.scalar()

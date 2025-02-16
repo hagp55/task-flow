@@ -29,19 +29,19 @@ class AuthService:
     yandex_client: YandexClient
 
     async def login(self, username: str, password: str) -> UserLoginOut:
-        user: User | None = self.users_repository.get_by_username(
+        user: User | None = await self.users_repository.get_by_username(
             username=username,
         )
         await self._validate_auth_user(user, password)
         access_token: str = self.generate_access_token(user_id=user.id)
         return UserLoginOut(id=user.id, access_token=access_token)
 
-    async def get_google_redirect_url(self) -> str:
+    def get_google_redirect_url(self) -> str:
         return settings.GOOGLE_REDIRECT_URL
 
-    async def google_auth(self, code: str):
-        user_data: GoogleUserDataOut = self.google_client.get_user_info(code)
-        if user := self.users_repository.get_user_by_email(
+    async def google_auth(self, code: str) -> UserLoginOut:
+        user_data: GoogleUserDataOut = await self.google_client.get_user_info(code)
+        if user := await self.users_repository.get_user_by_email(
             email=user_data.email,
         ):
             return UserLoginOut(
@@ -58,12 +58,12 @@ class AuthService:
             access_token=self.generate_access_token(user.id),
         )
 
-    async def get_yandex_redirect_url(self) -> str:
+    def get_yandex_redirect_url(self) -> str:
         return settings.YANDEX_REDIRECT_URL
 
-    async def yandex_auth(self, code: str):
-        user_data: YandexUserDataOut = self.yandex_client.get_user_info(code)
-        if user := self.users_repository.get_user_by_email(
+    async def yandex_auth(self, code: str) -> UserLoginOut:
+        user_data: YandexUserDataOut = await self.yandex_client.get_user_info(code)
+        if user := await self.users_repository.get_user_by_email(
             email=user_data.email,
         ):
             return UserLoginOut(
