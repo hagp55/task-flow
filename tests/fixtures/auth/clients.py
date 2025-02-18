@@ -4,6 +4,7 @@ import pytest
 from faker import Factory as FakerFactory
 
 from src.apps.auth.schemas import GoogleUserDataOut
+from tests.fixtures.users.user_model import EXISTS_GOOGLE_EMAIL, EXISTS_GOOGLE_USER_ID
 
 faker = FakerFactory.create()
 
@@ -44,8 +45,8 @@ def yandex_client() -> FakeYandexClient:
 
 def google_user_info_data() -> GoogleUserDataOut:
     return GoogleUserDataOut(
-        id=faker.random_int(),
-        email=faker.email(),
+        id=EXISTS_GOOGLE_USER_ID,
+        email=EXISTS_GOOGLE_EMAIL,
         name=faker.name(),  # type: ignore
         google_access_token=faker.sha256(),
     )

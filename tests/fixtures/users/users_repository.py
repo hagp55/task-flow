@@ -24,5 +24,5 @@ class FakeUsersRepository:
 
 
 @pytest.fixture
-def users_repository() -> FakeUsersRepository:
+def fake_users_repository() -> FakeUsersRepository:
     return FakeUsersRepository()
