@@ -43,4 +43,3 @@ def create_app() -> FastAPI:
 
 
 app: FastAPI = create_app()
-logger.info(app.user_middleware)
