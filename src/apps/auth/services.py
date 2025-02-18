@@ -92,7 +92,7 @@ class AuthService:
         expires_date: datetime = datetime.now(UTC) + timedelta(hours=settings.JWT_UPDATE_TIME)
         payload: dict[str, Any] = {
             "id": user_id,
-            "expire": expires_date.timestamp(),
+            "expire": int(expires_date.timestamp()),
         }
         return jwt.encode(
             payload,

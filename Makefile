@@ -57,7 +57,7 @@ ruff-fix:
 # TESTS
 .PHONY: tests
 tests: # Run all tests
-	pytest tests
+	pytest tests -vs
 
 
 help: ## Show this help message
