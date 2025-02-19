@@ -33,7 +33,8 @@ async def login_user(
 @router.get(
     "/login/google",
     response_class=RedirectResponse,
-    description="Go to lint in any browser <b>http://localhost:8000/api/v1/auth/login/google</b>",
+    name="For signup go to link in any browser http://localhost:8000/api/v1/auth/login/google",
+    description="Go to link in any browser <b>http://localhost:8000/api/v1/auth/login/google</b>",
 )
 async def login_user_with_google(
     auth_service: Annotated[AuthService, Depends(get_auth_service)],
@@ -51,7 +52,12 @@ async def google_auth(
     return await auth_service.google_auth(code=code)
 
 
-@router.get("/login/yandex", response_class=RedirectResponse)
+@router.get(
+    "/login/yandex",
+    response_class=RedirectResponse,
+    name="For signup go to link in any browser http://localhost:8000/api/v1/auth/login/yandex",
+    description="For signup go to link in any browser <b>http://localhost:8000/api/v1/auth/login/yandex</b>",
+)
 async def login_user_with_yandex(
     auth_service: Annotated[AuthService, Depends(get_auth_service)],
 ) -> RedirectResponse:

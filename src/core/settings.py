@@ -41,6 +41,7 @@ class Settings(BaseSettings):
 
     # CELERY
     CELERY_REDIS_URL: str = "redis://localhost:6379/0"
+    CELERY_BROKER_URL: str = "amqp://guest:guest@localhost:5672//"
 
     # SMTP
     SMTP_EMAIL: str

@@ -10,7 +10,7 @@ run-celery: ## Run the celery
 	poetry run celery -A src.worker.celery worker --loglevel=info
 
 run-flower: ## Run the flower
-	poetry run celery --broker=redis://localhost:6379/0 flower --port=5555
+	poetry run celery --broker=amqp://guest:guest@localhost:5672// flower --port=5555
 
 run-gunicorn: ## Run the application using gunicorn
 	poetry run gunicorn src.main:app -c src/gunicorn.conf.py --reload

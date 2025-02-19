@@ -8,8 +8,8 @@ from celery import Celery
 from src.core.settings import settings
 
 celery = Celery(__name__)
-celery.conf.broker_url = settings.CELERY_REDIS_URL
-celery.conf.result_backend = settings.CELERY_REDIS_URL
+celery.conf.broker_url = settings.CELERY_BROKER_URL
+celery.conf.result_backend = "rpc://"
 
 
 @celery.task(name="send_email_task")
@@ -27,7 +27,7 @@ def _build_message(subject: str, text: str, to: str) -> MIMEMultipart:
     return message
 
 
-def _send_email(message):
+def _send_email(message) -> None:
     context: smtplib.SSLContext = ssl.create_default_context()
     server = smtplib.SMTP_SSL(
         settings.SMTP_HOST,

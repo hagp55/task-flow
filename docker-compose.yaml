@@ -28,5 +28,12 @@ services:
       - "${REDIS_PORT}:6379"
     restart: unless-stopped
 
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
+
 volumes:
   pg_data:
