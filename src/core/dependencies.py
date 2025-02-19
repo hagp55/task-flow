@@ -14,6 +14,7 @@ from src.apps.users.services import UsersService
 from src.core.db import get_async_session
 from src.core.services.cache import get_redis_connection
 from src.core.services.clients.google import GoogleClient
+from src.core.services.clients.mail import MailClient
 from src.core.services.clients.yandex import YandexClient
 from src.exceptions import TokenExpiredException, TokenHasNotValidSignatureException
 
@@ -22,6 +23,18 @@ reusable_oauth2 = security.HTTPBearer()
 
 
 session = Annotated[AsyncSession, Depends(get_async_session)]
+
+
+def get_mail_client() -> MailClient:
+    return MailClient()
+
+
+def get_google_client() -> GoogleClient:
+    return GoogleClient()
+
+
+def get_yandex_client() -> YandexClient:
+    return YandexClient()
 
 
 def get_tasks_repository(
@@ -48,23 +61,17 @@ def get_tasks_service(
     return TasksService(task_repository, cache_task_repository)
 
 
-def get_google_client() -> GoogleClient:
-    return GoogleClient()
-
-
-def get_yandex_client() -> YandexClient:
-    return YandexClient()
-
-
 def get_auth_service(
     users_repository: Annotated[UsersRepository, Depends(get_users_repository)],
     google_client: Annotated[GoogleClient, Depends(get_google_client)],
     yandex_client: Annotated[YandexClient, Depends(get_yandex_client)],
+    mail_client: Annotated[MailClient, Depends(get_mail_client)],
 ) -> AuthService:
     return AuthService(
         users_repository=users_repository,
         google_client=google_client,
         yandex_client=yandex_client,
+        mail_client=mail_client,
     )
 
 

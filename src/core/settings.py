@@ -39,6 +39,15 @@ class Settings(BaseSettings):
     YANDEX_REDIRECT_URI: str
     YANDEX_TOKEN_URL: str = "https://oauth.yandex.ru/token"
 
+    # CELERY
+    CELERY_REDIS_URL: str = "redis://localhost:6379/0"
+
+    # SMTP
+    SMTP_EMAIL: str
+    SMTP_HOST: str
+    SMTP_PORT: int
+    SMTP_PASSWORD: str
+
     @property
     def GOOGLE_REDIRECT_URL(self) -> str:
         return f"https://accounts.google.com/o/oauth2/auth?response_type=code&client_id={self.GOOGLE_CLIENT_ID}&redirect_uri={self.GOOGLE_REDIRECT_URI}&scope=openid%20profile%20email&access_type=offline"

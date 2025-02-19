@@ -1,4 +1,5 @@
 import logging
+import time
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, Response, status
@@ -14,6 +15,11 @@ __all__ = ("router",)
 
 router = APIRouter(prefix="/tasks", tags=["Tasks"])
 logger = logging.getLogger(__name__)
+
+
+def get_tasks_log(tasks_count: int):
+    time.sleep(3)
+    logger.info(f"{tasks_count} Tasks was got")
 
 
 @router.post("", response_model=TaskOut, status_code=status.HTTP_201_CREATED)

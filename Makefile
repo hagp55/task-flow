@@ -6,6 +6,12 @@ PORT ?= 8000
 run: ## Run the application using uvicorn
 	poetry run uvicorn src.main:app --host $(HOST) --port $(PORT) --reload
 
+run-celery: ## Run the celery
+	poetry run celery -A src.worker.celery worker --loglevel=info
+
+run-flower: ## Run the flower
+	poetry run celery --broker=redis://localhost:6379/0 flower --port=5555
+
 run-gunicorn: ## Run the application using gunicorn
 	poetry run gunicorn src.main:app -c src/gunicorn.conf.py --reload
 

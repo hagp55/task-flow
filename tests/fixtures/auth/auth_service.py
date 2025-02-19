@@ -2,6 +2,7 @@ import pytest
 
 from src.apps.auth.services import AuthService
 from src.apps.users.repositories import UsersRepository
+from src.core.services.clients.mail import MailClient
 
 
 @pytest.fixture
@@ -10,6 +11,7 @@ def mock_auth_service(google_client, yandex_client, fake_users_repository) -> Au
         users_repository=fake_users_repository,
         google_client=google_client,
         yandex_client=yandex_client,
+        mail_client=MailClient(),
     )
 
 
@@ -19,4 +21,5 @@ def auth_service(google_client, yandex_client, db_session) -> AuthService:
         users_repository=UsersRepository(db_session),
         google_client=google_client,
         yandex_client=yandex_client,
+        mail_client=MailClient(),
     )

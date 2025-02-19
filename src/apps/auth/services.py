@@ -10,6 +10,7 @@ from src.apps.users.models import User
 from src.apps.users.repositories import UsersRepository
 from src.apps.users.schemas import UserLoginOut
 from src.core.services.clients.google import GoogleClient
+from src.core.services.clients.mail import MailClient
 from src.core.services.clients.yandex import YandexClient
 from src.core.settings import settings
 from src.exceptions import (
@@ -27,6 +28,7 @@ class AuthService:
     users_repository: UsersRepository
     google_client: GoogleClient
     yandex_client: YandexClient
+    mail_client: MailClient
 
     async def login(self, username: str, password: str) -> UserLoginOut:
         user: User | None = await self.users_repository.get_by_username(
@@ -53,6 +55,7 @@ class AuthService:
             first_name=user_data.name,
             google_access_token=user_data.google_access_token,
         )
+        self.mail_client.send_welcome_email(to=user_data.email)
         return UserLoginOut(
             id=user.id,
             access_token=self.generate_access_token(user.id),
@@ -75,6 +78,7 @@ class AuthService:
             first_name=user_data.name,
             yandex_access_token=user_data.access_token,
         )
+        self.mail_client.send_welcome_email(to=user_data.email)
         return UserLoginOut(
             id=user.id,
             access_token=self.generate_access_token(user.id),

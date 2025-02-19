@@ -30,7 +30,11 @@ async def login_user(
         raise HTTPException(status_code=401, detail=e.detail)
 
 
-@router.get("/login/google", response_class=RedirectResponse)
+@router.get(
+    "/login/google",
+    response_class=RedirectResponse,
+    description="Go to lint in any browser <b>http://localhost:8000/api/v1/auth/login/google</b>",
+)
 async def login_user_with_google(
     auth_service: Annotated[AuthService, Depends(get_auth_service)],
 ) -> RedirectResponse:
