@@ -41,13 +41,7 @@ class Settings(BaseSettings):
 
     # CELERY
     CELERY_REDIS_URL: str = "redis://localhost:6379/0"
-    CELERY_BROKER_URL: str = "amqp://guest:guest@localhost:5672//"
-
-    # SMTP
-    SMTP_EMAIL: str
-    SMTP_HOST: str
-    SMTP_PORT: int
-    SMTP_PASSWORD: str
+    AMQP_BROKER_URL: str = "amqp://guest:guest@localhost:5672//"
 
     @property
     def GOOGLE_REDIRECT_URL(self) -> str:

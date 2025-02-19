@@ -55,7 +55,7 @@ class AuthService:
             first_name=user_data.name,
             google_access_token=user_data.google_access_token,
         )
-        self.mail_client.send_welcome_email(to=user_data.email)
+        await self.mail_client.send_welcome_email(to=user_data.email)
         return UserLoginOut(
             id=user.id,
             access_token=self.generate_access_token(user.id),
@@ -78,7 +78,7 @@ class AuthService:
             first_name=user_data.name,
             yandex_access_token=user_data.access_token,
         )
-        self.mail_client.send_welcome_email(to=user_data.email)
+        await self.mail_client.send_welcome_email(to=user_data.email)
         return UserLoginOut(
             id=user.id,
             access_token=self.generate_access_token(user.id),

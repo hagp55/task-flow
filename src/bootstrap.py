@@ -1,4 +1,5 @@
 import logging
+from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -12,6 +13,12 @@ logger = logging.getLogger(__name__)
 
 def _init_loggers(app) -> None:
     set_logging()
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # await make_amqp_consumer()
+    yield
 
 
 def _init_routers(app) -> None:
@@ -35,6 +42,7 @@ def _init_middlewares(app) -> None:
 def create_app() -> FastAPI:
     _app: FastAPI = FastAPI(
         debug=settings.DEBUG,
+        lifespan=lifespan,
     )
     _init_loggers(_app)
     _init_middlewares(_app)
