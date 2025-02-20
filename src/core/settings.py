@@ -15,6 +15,7 @@ config = SettingsConfigDict(
 class Settings(BaseSettings):
     model_config = config
 
+    # BASE SETTINGS API
     BASE_DIR: Path = Path(__file__).parents[2]
     DEBUG: bool = False
     APP_PORT: int = 8000
@@ -39,8 +40,7 @@ class Settings(BaseSettings):
     YANDEX_REDIRECT_URI: str
     YANDEX_TOKEN_URL: str = "https://oauth.yandex.ru/token"
 
-    # CELERY
-    CELERY_REDIS_URL: str = "redis://localhost:6379/0"
+    # BROKER
     AMQP_BROKER_URL: str = "amqp://guest:guest@localhost:5672//"
 
     @property
