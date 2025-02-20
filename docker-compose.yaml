@@ -1,4 +1,20 @@
 services:
+  pomodoro_api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: pomodoro_api_container
+    command: sh -c "alembic upgrade head && poetry run uvicorn src.main:app --host=0.0.0.0 --port=8000 --reload"
+    env_file:
+      - .env
+    volumes:
+      - ./:/app/
+    ports:
+      - "8000:8000"
+    restart: unless-stopped
+    depends_on:
+      - pomodoro_db
+
   pomodoro_db:
     image: postgres:16.3-alpine
     container_name: pomodoro_db_container
