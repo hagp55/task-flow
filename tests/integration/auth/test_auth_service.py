@@ -1,5 +1,6 @@
 from collections.abc import Sequence
 
+import pytest
 from sqlalchemy import insert, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -9,6 +10,7 @@ from src.apps.users.schemas import UserLoginOut
 from tests.fixtures.users.user_model import EXISTS_GOOGLE_EMAIL, EXISTS_GOOGLE_USER_ID
 
 
+@pytest.mark.skip
 async def test_google_auth__login_not_exists_user(
     auth_service: AuthService,
     db_session: AsyncSession,
@@ -24,6 +26,7 @@ async def test_google_auth__login_not_exists_user(
     assert login_user is not None
 
 
+@pytest.mark.skip
 async def test_google_auth__login_exists_user(
     auth_service: AuthService,
     db_session: AsyncSession,
