@@ -13,7 +13,7 @@ concurrency:
 
 jobs:
   run-linter:
-    if: ${{ github.event.pull_request == true || github.event_name == 'workflow_dispatch' }}
+    if: ${{ github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch' }}
     runs-on: ubuntu-latest
     timeout-minutes: 3
 
