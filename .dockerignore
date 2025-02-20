@@ -1,0 +1,12 @@
+__pycache__/
+.mypy_cache/
+pytest_cache/
+.coverage/
+.vscode/
+.venv/
+.git/
+*.pyc
+.env.example
+.pre-commit-config.yaml
+README.md
+Makefile
