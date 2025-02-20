@@ -1,5 +1,6 @@
 from typing import Annotated
 
+import sentry_sdk
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -40,3 +41,9 @@ async def get_healthcheck_status_db(
         )
 
     return HealthCheckDBResponseSchema()
+
+
+@router.get("/sentry-debug")
+async def trigger_error():
+    sentry_sdk.capture_message("This a test error")
+    division_by_zero = 1 / 0

@@ -43,6 +43,9 @@ class Settings(BaseSettings):
     # BROKER
     AMQP_BROKER_URL: str = "amqp://guest:guest@localhost:5672//"
 
+    # LOGGING
+    SENTRY_URL: str
+
     @property
     def GOOGLE_REDIRECT_URL(self) -> str:
         return f"https://accounts.google.com/o/oauth2/auth?response_type=code&client_id={self.GOOGLE_CLIENT_ID}&redirect_uri={self.GOOGLE_REDIRECT_URI}&scope=openid%20profile%20email&access_type=offline"
