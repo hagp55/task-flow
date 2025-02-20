@@ -6,6 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from src.apps import api_router
 from src.core.loggers import set_logging
+from src.core.services.sentry import sentry_init
 from src.core.settings import settings
 
 logger = logging.getLogger(__name__)
@@ -13,6 +14,7 @@ logger = logging.getLogger(__name__)
 
 def _init_loggers(app) -> None:
     set_logging()
+    sentry_init()
 
 
 @asynccontextmanager

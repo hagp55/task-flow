@@ -24,6 +24,7 @@ gunicorn = "^23.0.0"
 celery = "^5.4.0"
 flower = "^2.0.1"
 aio-pika = "^9.5.4"
+sentry-sdk = {extras = ["fastapi"], version = "^2.22.0"}
 
 
 [tool.poetry.group.linter.dependencies]
