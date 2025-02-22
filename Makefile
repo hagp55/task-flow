@@ -52,22 +52,22 @@ db-destroy: ## Delete volume database
 
 # ALEMBIC MIGRATIONS
 alembic-migration-init: ## Create alembic template for migrations
-	alembic init migrations
+	${DC} exec ${APP_SERVICE} alembic init migrations
 
 alembic-migration-history: ## Show all alembic migrations
-	alembic history --verbose
+	${DC} exec ${APP_SERVICE} alembic history --verbose
 
 alembic-migration-generate: ## Generate migrations with message
-	alembic revision --autogenerate -m "$(m)"
+	${DC} exec ${APP_SERVICE} alembic revision --autogenerate -m "$(m)"
 
 alembic-migration-upgrade: ## Apply all migrations
-	alembic upgrade head
+	${DC} exec ${APP_SERVICE} alembic upgrade head
 
 alembic-migration-downgrade: ## downgrade -1 migration
-	alembic downgrade -1
+	${DC} exec ${APP_SERVICE} alembic downgrade -1
 
 alembic-migration-downgrade-base: ## downgrade all migrations
-	alembic downgrade base
+	${DC} exec ${APP_SERVICE} alembic downgrade base
 
 
 # LINTERS

@@ -44,7 +44,6 @@ class TasksService:
 
     async def delete(self, user_id: int, task_id) -> None:
         task: Task = await self.task_repository.get_task_by_user(user_id, task_id)
-        logger.info(task)
         if not task:
             raise TaskNotFoundException
         await self.task_repository.delete(task_id)

@@ -13,7 +13,7 @@ from src.exceptions import TaskNotFoundException
 __all__ = ("router",)
 
 
-router = APIRouter(prefix="/tasks", tags=["Tasks"])
+router = APIRouter(prefix="/tasks", tags=["Tasks 👨‍💻"])
 logger = logging.getLogger(__name__)
 
 

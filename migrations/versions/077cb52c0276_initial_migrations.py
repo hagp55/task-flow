@@ -1,8 +1,8 @@
 """Initial migrations
 
-Revision ID: 3dae5eb34617
+Revision ID: 077cb52c0276
 Revises:
-Create Date: 2025-02-16 19:27:15.434711
+Create Date: 2025-02-22 07:19:38.241027
 
 """
 
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 from alembic import op
 
 # revision identifiers, used by Alembic.
-revision: str = "3dae5eb34617"
+revision: str = "077cb52c0276"
 down_revision: str | None = None
 branch_labels: str | Sequence[str] | None = None
 depends_on: str | Sequence[str] | None = None
@@ -29,14 +29,21 @@ def upgrade() -> None:
     op.create_table(
         "users",
         sa.Column("id", sa.Integer(), nullable=False),
-        sa.Column("username", sa.String(), nullable=True),
-        sa.Column("password", sa.String(), nullable=True),
-        sa.Column("email", sa.String(), nullable=True),
-        sa.Column("google_access_token", sa.String(), nullable=True),
-        sa.Column("yandex_access_token", sa.String(), nullable=True),
-        sa.Column("first_name", sa.String(), nullable=True),
-        sa.Column("last_name", sa.String(), nullable=True),
+        sa.Column("username", sa.String(length=100), nullable=True),
+        sa.Column("password", sa.String(length=250), nullable=True),
+        sa.Column("email", sa.String(length=100), nullable=True),
+        sa.Column("google_access_token", sa.String(length=250), nullable=True),
+        sa.Column("yandex_access_token", sa.String(length=250), nullable=True),
+        sa.Column("first_name", sa.String(length=250), nullable=True),
+        sa.Column("last_name", sa.String(length=250), nullable=True),
+        sa.Column("date_joined", sa.DateTime(), server_default=sa.text("now()"), nullable=True),
+        sa.Column("last_login", sa.DateTime(), nullable=True),
+        sa.Column("is_active", sa.Boolean(), nullable=False),
+        sa.Column("is_staff", sa.Boolean(), nullable=False),
+        sa.Column("is_super_user", sa.Boolean(), nullable=False),
         sa.PrimaryKeyConstraint("id", name=op.f("users_pkey")),
+        sa.UniqueConstraint("email", name=op.f("users_email_key")),
+        sa.UniqueConstraint("username", name=op.f("users_username_key")),
     )
     op.create_table(
         "tasks",

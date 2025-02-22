@@ -41,6 +41,7 @@ class Settings(BaseSettings):
     YANDEX_TOKEN_URL: str = "https://oauth.yandex.ru/token"
 
     # BROKER
+    EMAIL_SERVICE: bool = False
     AMQP_BROKER_URL: str = "amqp://guest:guest@localhost:5672//"
 
     # LOGGING

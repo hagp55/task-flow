@@ -11,13 +11,13 @@ from src.core.db import get_async_session
 __all__ = ("router",)
 
 
-router = APIRouter(prefix="/healthcheck", tags=["Healthcheck"])
+router = APIRouter(prefix="/healthcheck", tags=["Healthcheck 👨‍⚕️"])
 
 
 @router.get(
     "",
     description="Application status",
-    name="Get application status",
+    name="Get app status 🌡️",
     response_model=HealthCheckResponseSchema,
 )
 async def get_healthcheck_status() -> HealthCheckResponseSchema:
@@ -26,7 +26,7 @@ async def get_healthcheck_status() -> HealthCheckResponseSchema:
 
 @router.get(
     "/db",
-    name="Get status database",
+    name="Get database status 💊",
     response_model=HealthCheckDBResponseSchema,
 )
 async def get_healthcheck_status_db(
@@ -43,7 +43,10 @@ async def get_healthcheck_status_db(
     return HealthCheckDBResponseSchema()
 
 
-@router.get("/sentry-debug")
+@router.get(
+    "/sentry-debug",
+    name="Send error to the sentry 🤒",
+)
 async def trigger_error():
     sentry_sdk.capture_message("This a test error")
     division_by_zero = 1 / 0

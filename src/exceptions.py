@@ -3,7 +3,7 @@ class UserNotFoundException(Exception):
 
 
 class UserAlreadyExistsException(Exception):
-    detail: str = "User not found"
+    detail: str = "User with this email already exists"
 
 
 class UserNotCorrectPasswordException(Exception):
