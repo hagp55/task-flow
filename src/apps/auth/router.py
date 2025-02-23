@@ -9,7 +9,7 @@ from src.apps.users.schemas import UserLoginIn, UserLoginOut
 from src.core.dependencies import get_auth_service
 from src.exceptions import UserNotCorrectPasswordException, UserNotFoundException
 
-router = APIRouter(prefix="/auth", tags=["Auth 🙋‍♂️"])
+router = APIRouter()
 logger = logging.getLogger(__name__)
 
 

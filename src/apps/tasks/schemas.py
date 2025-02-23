@@ -1,20 +1,21 @@
+from datetime import datetime
+
+from src.apps.tasks.enums import Priority, Status
 from src.core import schemas
 
 
 class TaskIn(schemas.InputApiSchema):
     name: str
-    pomodoro_count: int
-    category_id: int
-
-    # @model_validator(mode="after")
-    # def check_name_or_pomodoro_count_is_not_none(self) -> Self:
-    #     if self.name is None and self.pomodoro_count is None:
-    #         raise ValueError("Enter name or pomodoro_count")
-    #     return self
+    project_id: int | None = None
+    priority: Priority | None = Priority.low
+    status: Status | None = Status.pending
 
 
 class TaskOut(schemas.OutputApiSchema):
     id: int
     name: str
-    pomodoro_count: int
-    category_id: int
+    project_id: int
+    priority: Priority | None = Priority.low
+    status: Status | None = Status.pending
+    created_at: datetime
+    updated_at: datetime

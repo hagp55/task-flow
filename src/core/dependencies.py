@@ -6,6 +6,8 @@ from redis import Redis
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.apps.auth.services import AuthService
+from src.apps.projects.repository import ProjectRepository
+from src.apps.projects.services import ProjectService
 from src.apps.tasks.cache_repositories import CacheTasks
 from src.apps.tasks.repositories import TaskRepository
 from src.apps.tasks.services import TasksService
@@ -52,6 +54,18 @@ def get_users_repository(
     db_session: session,
 ) -> UsersRepository:
     return UsersRepository(db_session=db_session)
+
+
+def get_project_repository(
+    db_session: session,
+) -> ProjectRepository:
+    return ProjectRepository(session=db_session)
+
+
+def get_project_service(
+    project_repository: Annotated[ProjectRepository, Depends(get_project_repository)],
+) -> ProjectService:
+    return ProjectService(project_repository=project_repository)
 
 
 def get_tasks_service(

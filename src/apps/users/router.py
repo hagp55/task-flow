@@ -10,7 +10,7 @@ from src.exceptions import UserAlreadyExistsException, UserNotFoundException
 __all__ = ("router",)
 
 
-router = APIRouter(prefix="/users", tags=["Users 👨‍🦱"])
+router = APIRouter()
 
 
 @router.post(

@@ -24,6 +24,9 @@ full-build: ## Rebuild all services and refresh cache
 restart: ## Restart all services
 	${DC} restart
 
+restart-api: ## Restart only api
+	${DC} restart ${APP_SERVICE}
+
 down: ## Down all services
 	docker compose down
 

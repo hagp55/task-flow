@@ -3,7 +3,8 @@ import logging
 from sqlalchemy import delete, insert, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.apps.tasks.models import Category, Task
+from src.apps.projects.models import Project
+from src.apps.tasks.models import Task
 from src.apps.tasks.schemas import TaskIn
 from src.core.db import engine
 
@@ -57,10 +58,8 @@ class TaskRepository:
         result = await self.db_session.execute(query)
         return result.scalar()
 
-    async def get_tasks_by_category_name(self, category_name: str) -> list[Task]:
-        query = (
-            select(Task).join(Category, Task.category_id == Category.id).where(Category.name == category_name)
-        )
+    async def get_tasks_by_project_name(self, project_name: str) -> list[Task]:
+        query = select(Task).join(Project, Task.project_id == Project.id).where(Project.name == project_name)
         logger.debug(
             "Query:\n%s" % (query.compile(engine, compile_kwargs={"literal_binds": True})),
         )

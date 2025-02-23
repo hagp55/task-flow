@@ -20,3 +20,7 @@ class TokenHasNotValidSignatureException(Exception):
 
 class TaskNotFoundException(Exception):
     detail: str = "Task not found"
+
+
+class ProjectNotFoundException(Exception):
+    detail: str = "Project not found"
