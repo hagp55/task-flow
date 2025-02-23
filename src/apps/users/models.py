@@ -11,16 +11,10 @@ class User(Base):
     username: Mapped[uniq_str_250_or_none]
     password: Mapped[str_250_or_none]
     email: Mapped[uniq_str_250_or_none]
-    google_access_token: Mapped[str_250_or_none]
-    yandex_access_token: Mapped[str_250_or_none]
     first_name: Mapped[str_250_or_none]
     last_name: Mapped[str_250_or_none]
-    date_joined: Mapped[datetime | None] = mapped_column(
-        server_default=func.now(),
-    )
-    last_login: Mapped[datetime | None] = mapped_column(
-        server_onupdate=func.now(),
-    )
+    date_joined: Mapped[datetime | None] = mapped_column(server_default=func.now())
+    last_login: Mapped[datetime | None] = mapped_column(server_onupdate=func.now())
     is_active: Mapped[boolean_true]
     is_staff: Mapped[boolean_false]
     is_super_user: Mapped[boolean_false]

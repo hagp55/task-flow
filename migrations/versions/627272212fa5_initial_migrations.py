@@ -1,8 +1,8 @@
 """Initial migrations
 
-Revision ID: 53f955f0d892
+Revision ID: 627272212fa5
 Revises:
-Create Date: 2025-02-23 11:41:55.658615
+Create Date: 2025-02-23 13:39:00.859187
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '53f955f0d892'
+revision: str = '627272212fa5'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -25,8 +25,6 @@ def upgrade() -> None:
     sa.Column('username', sa.String(length=100), nullable=True),
     sa.Column('password', sa.String(length=250), nullable=True),
     sa.Column('email', sa.String(length=100), nullable=True),
-    sa.Column('google_access_token', sa.String(length=250), nullable=True),
-    sa.Column('yandex_access_token', sa.String(length=250), nullable=True),
     sa.Column('first_name', sa.String(length=250), nullable=True),
     sa.Column('last_name', sa.String(length=250), nullable=True),
     sa.Column('date_joined', sa.DateTime(), server_default=sa.text('now()'), nullable=True),
@@ -44,7 +42,7 @@ def upgrade() -> None:
     sa.Column('user_id', sa.Integer(), nullable=False),
     sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
     sa.Column('updated_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
-    sa.ForeignKeyConstraint(['user_id'], ['users.id'], name=op.f('projects_user_id_fkey')),
+    sa.ForeignKeyConstraint(['user_id'], ['users.id'], name=op.f('projects_user_id_fkey'), ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('id', name=op.f('projects_pkey'))
     )
     op.create_table('tasks',

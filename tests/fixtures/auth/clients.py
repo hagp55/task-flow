@@ -48,5 +48,4 @@ def google_user_info_data() -> GoogleUserDataOut:
         id=EXISTS_GOOGLE_USER_ID,
         email=EXISTS_GOOGLE_EMAIL,
         name=faker.name(),  # type: ignore
-        google_access_token=faker.sha256(),
     )

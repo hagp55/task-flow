@@ -53,7 +53,6 @@ class AuthService:
         user: User | None = await self.users_repository.create(
             email=user_data.email,
             first_name=user_data.name,
-            google_access_token=user_data.google_access_token,
         )
         if settings.EMAIL_SERVICE:
             await self.mail_client.send_welcome_email(to=user_data.email)
@@ -77,7 +76,6 @@ class AuthService:
         user: User | None = await self.users_repository.create(
             email=user_data.email,
             first_name=user_data.name,
-            yandex_access_token=user_data.access_token,
         )
         if settings.EMAIL_SERVICE:
             await self.mail_client.send_welcome_email(to=user_data.email)
