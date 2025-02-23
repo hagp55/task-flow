@@ -12,7 +12,7 @@ router = APIRouter()
 
 @router.post(
     "/",
-    name="Create a new project 📥",
+    name="Create a new project 📌 ",
     response_model=ProjectOut,
     status_code=status.HTTP_201_CREATED,
 )
@@ -26,7 +26,7 @@ async def create_project(
 
 @router.get(
     "/",
-    name="Get your projects 📤",
+    name="Get projects 📖 ",
     response_model=list[ProjectOut],
     status_code=status.HTTP_200_OK,
 )
@@ -39,7 +39,7 @@ async def get_projects(
 
 @router.get(
     "/{project_id}",
-    name="Get your project 📤",
+    name="Get project 📖 ",
     response_model=ProjectOut,
     status_code=status.HTTP_200_OK,
 )
@@ -59,7 +59,7 @@ async def get_project(
 
 @router.put(
     "/{project_id}",
-    name="Update your project 📥",
+    name="Update project ✏",
     response_model=ProjectOut,
     status_code=status.HTTP_200_OK,
 )
@@ -84,7 +84,7 @@ async def update_project(
 
 @router.delete(
     "/{project_id}",
-    name="Delete your project 🗑️",
+    name="Delete project 🗑️",
     response_class=Response,
     status_code=status.HTTP_204_NO_CONTENT,
 )

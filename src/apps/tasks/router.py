@@ -7,7 +7,7 @@ from src.apps.tasks.models import Task
 from src.apps.tasks.schemas import TaskIn, TaskOut
 from src.apps.tasks.services import TasksService
 from src.core.dependencies import get_request_user_id, get_tasks_service
-from src.exceptions import TaskNotFoundException
+from src.exceptions import ProjectNotFoundException, TaskNotFoundException
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 
 @router.post(
     "",
-    name="Create a new task 💼",
+    name="Create a new task 📝",
     response_model=TaskOut,
     status_code=status.HTTP_201_CREATED,
 )
@@ -24,30 +24,38 @@ async def create_task(
     task_service: Annotated[TasksService, Depends(get_tasks_service)],
     user_id: int = Depends(get_request_user_id),
 ) -> TaskOut:
-    return await task_service.create(user_id, payload)
+    try:
+        return await task_service.create(user_id, payload)
+    except ProjectNotFoundException as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e.detail),
+        )
 
 
 @router.get(
     "",
-    name="Get tasks 💼",
+    name="Get tasks 📖",
     response_model=list[TaskOut],
     status_code=status.HTTP_200_OK,
 )
 async def get_tasks(
     task_service: Annotated[TasksService, Depends(get_tasks_service)],
+    user_id: int = Depends(get_request_user_id),
 ) -> list[Task]:
     return await task_service.get_all()  # type: ignore
 
 
 @router.get(
     "/{task_id}",
-    name="Get task 💼",
+    name="Get task 📖",
     response_model=TaskOut,
     status_code=status.HTTP_200_OK,
 )
 async def get_task(
     task_id: int,
     task_service: Annotated[TasksService, Depends(get_tasks_service)],
+    user_id: int = Depends(get_request_user_id),
 ) -> Task:
     try:
         return await task_service.get(task_id)
@@ -60,7 +68,7 @@ async def get_task(
 
 @router.put(
     "/{task_id}",
-    name="Update task 💼",
+    name="Update task ✏",
     response_model=TaskOut,
     status_code=status.HTTP_200_OK,
 )
@@ -81,7 +89,7 @@ async def update_task(
 
 @router.delete(
     "/{task_id}",
-    name="Delete task 💼",
+    name="Delete task 🗑️",
     response_class=Response,
     status_code=status.HTTP_204_NO_CONTENT,
 )

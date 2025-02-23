@@ -1,12 +1,14 @@
 import logging
 
 from sqlalchemy import delete, insert, select, update
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.apps.projects.models import Project
 from src.apps.tasks.models import Task
 from src.apps.tasks.schemas import TaskIn
 from src.core.db import engine
+from src.exceptions import ProjectNotFoundException
 
 logger: logging.Logger = logging.getLogger(__name__)
 
@@ -16,22 +18,25 @@ class TaskRepository:
         self.db_session: AsyncSession = session
 
     async def create(self, user_id: int, payload: TaskIn) -> Task:
-        query = (
-            insert(Task)
-            .values(
-                user_id=user_id,
-                **payload.model_dump(),
+        try:
+            query = (
+                insert(Task)
+                .values(
+                    user_id=user_id,
+                    **payload.model_dump(),
+                )
+                .returning(Task)
             )
-            .returning(Task)
-        )
-        logger.debug(
-            "Query:\n%s" % (query.compile(engine, compile_kwargs={"literal_binds": True})),
-        )
-        result = await self.db_session.execute(query)
-        task = result.scalar()
-        await self.db_session.commit()
-        logger.debug(task)
-        return task
+            logger.debug(
+                "Query:\n%s" % (query.compile(engine, compile_kwargs={"literal_binds": True})),
+            )
+            result = await self.db_session.execute(query)
+            task = result.scalar()
+            await self.db_session.commit()
+            logger.debug(task)
+            return task
+        except IntegrityError:
+            raise ProjectNotFoundException
 
     async def get_all(self) -> list[Task]:
         query = select(Task)

@@ -27,6 +27,9 @@ restart: ## Restart all services
 restart-api: ## Restart only api
 	${DC} restart ${APP_SERVICE}
 
+restart-db: ## Restart only api
+	${DC} restart ${DB_SERVICE}
+
 down: ## Down all services
 	docker compose down
 
@@ -41,7 +44,6 @@ api-shell: ## Go to the api shell
 
 db-logs: ## Show logs only database
 	${DC} logs --follow ${DB_SERVICE}
-
 
 db-shell: ## Go to the db shell
 	${DC} exec ${APP_SERVICE} /bin/bash

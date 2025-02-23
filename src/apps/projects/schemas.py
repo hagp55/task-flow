@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from pydantic import Field
 
 from src.core.schemas import InputApiSchema, OutputApiSchema
@@ -10,3 +12,5 @@ class ProjectIn(InputApiSchema):
 class ProjectOut(OutputApiSchema):
     id: int
     name: str = Field(min_length=2, max_length=250, examples=["big cool project"])
+    created_at: datetime
+    updated_at: datetime

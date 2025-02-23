@@ -5,6 +5,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from src.apps import api_router
+from src.core.description import DESCRIPTION, TITLE
 from src.core.loggers import set_logging
 from src.core.services.sentry import sentry_init
 from src.core.settings import settings
@@ -45,6 +46,9 @@ def create_app() -> FastAPI:
     _app: FastAPI = FastAPI(
         debug=settings.DEBUG,
         lifespan=lifespan,
+        title=TITLE,
+        description=DESCRIPTION,
+        version=settings.API_VERSION,
     )
     _init_loggers(_app)
     _init_middlewares(_app)
