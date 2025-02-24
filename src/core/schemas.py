@@ -7,6 +7,7 @@ from pydantic.alias_generators import to_camel
 class InputApiSchema(BaseModel):
     model_config = ConfigDict(
         str_strip_whitespace=True,
+        use_enum_values=True,
         alias_generator=AliasGenerator(
             validation_alias=to_camel,
         ),

@@ -16,9 +16,9 @@ def mock_auth_service(google_client, yandex_client, fake_users_repository) -> Au
 
 
 @pytest.fixture
-def auth_service(google_client, yandex_client, db_session) -> AuthService:
+def auth_service(google_client, yandex_client, session) -> AuthService:
     return AuthService(
-        users_repository=UsersRepository(db_session),
+        users_repository=UsersRepository(session),
         google_client=google_client,
         yandex_client=yandex_client,
         mail_client=MailClient(),

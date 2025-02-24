@@ -1,7 +1,7 @@
 import logging
 from typing import Annotated
 
-from fastapi import Depends, HTTPException, Request, Security, security
+from fastapi import Depends, HTTPException, Security, security
 from redis import Redis
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -11,6 +11,7 @@ from src.apps.projects.services import ProjectService
 from src.apps.tasks.cache_repositories import CacheTasks
 from src.apps.tasks.repositories import TaskRepository
 from src.apps.tasks.services import TasksService
+from src.apps.users.models import User
 from src.apps.users.repositories import UsersRepository
 from src.apps.users.services import UsersService
 from src.core.db import get_async_session
@@ -18,7 +19,10 @@ from src.core.services.cache import get_redis_connection
 from src.core.services.clients.google import GoogleClient
 from src.core.services.clients.mail import MailClient
 from src.core.services.clients.yandex import YandexClient
-from src.exceptions import TokenExpiredException, TokenHasNotValidSignatureException
+from src.exceptions import (
+    TokenExpiredException,
+    TokenHasNotValidSignatureException,
+)
 
 logger = logging.getLogger(__name__)
 reusable_oauth2 = security.HTTPBearer()
@@ -40,26 +44,26 @@ def get_yandex_client() -> YandexClient:
 
 
 def get_tasks_repository(
-    db_session: session,
+    session: session,
 ) -> TaskRepository:
-    return TaskRepository(db_session)
+    return TaskRepository(session=session)
 
 
 def get_cache_tasks_repository() -> CacheTasks:
     redis_connection: Redis = get_redis_connection()  # type: ignore
-    return CacheTasks(redis_connection)
+    return CacheTasks(redis=redis_connection)
 
 
 def get_users_repository(
-    db_session: session,
+    session: session,
 ) -> UsersRepository:
-    return UsersRepository(db_session=db_session)
+    return UsersRepository(session=session)
 
 
 def get_project_repository(
-    db_session: session,
+    session: session,
 ) -> ProjectRepository:
-    return ProjectRepository(session=db_session)
+    return ProjectRepository(session=session)
 
 
 def get_project_service(
@@ -72,7 +76,10 @@ def get_tasks_service(
     task_repository: Annotated[TaskRepository, Depends(get_tasks_repository)],
     cache_task_repository: Annotated[CacheTasks, Depends(get_cache_tasks_repository)],
 ) -> TasksService:
-    return TasksService(task_repository, cache_task_repository)
+    return TasksService(
+        task_repository=task_repository,
+        cache_task_repository=cache_task_repository,
+    )
 
 
 def get_auth_service(
@@ -100,15 +107,36 @@ def get_users_service(
 
 
 async def get_request_user_id(
-    request: Request,
     auth_service: Annotated[AuthService, Depends(get_auth_service)],
     token: security.http.HTTPAuthorizationCredentials = Security(reusable_oauth2),
 ) -> int:
     try:
-        user_id: int = auth_service.get_user_id_from_access_token(token.credentials)
+        user_id: int = auth_service.get_user_id_from_access_token(access_token=token.credentials)
     except (TokenExpiredException, TokenHasNotValidSignatureException) as e:
         raise HTTPException(
             status_code=401,
             detail=e.detail,
         )
+    return user_id
+
+
+async def get_request_staff_or_superuser_user_id(
+    auth_service: Annotated[AuthService, Depends(get_auth_service)],
+    users_repository: Annotated[UsersRepository, Depends(get_users_repository)],
+    token: security.http.HTTPAuthorizationCredentials = Security(reusable_oauth2),
+) -> int:
+    try:
+        user_id: int = auth_service.get_user_id_from_access_token(access_token=token.credentials)
+    except (TokenExpiredException, TokenHasNotValidSignatureException) as e:
+        raise HTTPException(
+            status_code=401,
+            detail=e.detail,
+        )
+    user: User | None = await users_repository.get(user_id=user_id)
+    if user:
+        if not (user.is_staff or user.is_super_user):
+            raise HTTPException(
+                status_code=401,
+                detail="Permission denied",
+            )
     return user_id

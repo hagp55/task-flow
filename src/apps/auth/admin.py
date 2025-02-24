@@ -16,8 +16,8 @@ from src.apps.users.admin import UserAdmin
 from src.apps.users.models import User
 from src.apps.users.repositories import UsersRepository
 from src.core.db import AsyncSessionFactory, engine
-from src.core.dependencies import get_users_repository
 from src.core.settings import settings
+from src.dependencies import get_users_repository
 from src.exceptions import UserNotCorrectPasswordException
 
 logger = logging.getLogger(__name__)
@@ -54,9 +54,9 @@ class AdminAuth(AuthenticationBackend):
 
         async with AsyncSessionFactory() as session:
             try:
-                user_repository: UsersRepository = get_users_repository(db_session=session)
+                user_repository: UsersRepository = get_users_repository(session=session)
                 user: User | None = await user_repository.get_user_by_email(email=email)
-                if user is None or not user.is_active or not user.is_staff or not user.is_super_user:
+                if user is None or not user.is_active or not (user.is_staff or user.is_super_user):
                     return False
                 await AuthService._validate_auth_user(user=user, password=password)
             except UserNotCorrectPasswordException:

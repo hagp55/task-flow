@@ -15,6 +15,6 @@ async def init_tables():
 
 
 @pytest.fixture(scope="function")
-async def db_session():
+async def session():
     async with TestingSessionLocal() as session:
         yield session

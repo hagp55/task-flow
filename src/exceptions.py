@@ -24,3 +24,11 @@ class TaskNotFoundException(Exception):
 
 class ProjectNotFoundException(Exception):
     detail: str = "Project not found"
+
+
+class ProjectAlreadyExistsException(Exception):
+    detail: str = "Project already exists"
+
+
+class PermissionDeniedException(Exception):
+    detail: str = "Token has not valid signature"

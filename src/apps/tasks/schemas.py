@@ -7,7 +7,11 @@ from src.core import schemas
 
 
 class TaskIn(schemas.InputApiSchema):
-    name: str = Field(min_length=2, max_length=500, examples=["Think about interesting"])
+    name: str = Field(
+        min_length=2,
+        max_length=500,
+        examples=["Spend 10 minutes meditating to clear the mind."],
+    )
     project_id: int | None = Field(default=None, ge=1, examples=[None])
     priority: Priority | None = Field(
         default=Priority.low,
