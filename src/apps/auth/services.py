@@ -107,7 +107,7 @@ class AuthService:
         )
 
     @staticmethod
-    def get_user_id_from_access_token(access_token: str) -> int:
+    def get_user_id_from_access_token(*, access_token: str) -> int:
         try:
             payload: dict[str, Any] = jwt.decode(
                 access_token,

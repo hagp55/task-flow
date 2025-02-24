@@ -14,5 +14,6 @@ v1_router.include_router(router=task_router, prefix="/tasks", tags=["Tasks 📆"
 v1_router.include_router(router=user_router, prefix="/users", tags=["Users 👨‍🦱"])
 v1_router.include_router(router=auth_router, prefix="/auth", tags=["Auth 🙋‍♂️"])
 
+
 api_router = APIRouter(prefix=settings.API_PREFIX)
 api_router.include_router(v1_router)
