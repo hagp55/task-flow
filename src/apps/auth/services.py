@@ -6,6 +6,7 @@ from typing import Any
 from jose import JWTError, jwt
 
 from src.apps.auth.schemas import GoogleUserDataOut, YandexUserDataOut
+from src.apps.auth.security import bcrypt_context
 from src.apps.users.models import User
 from src.apps.users.repositories import UsersRepository
 from src.apps.users.schemas import UserLoginOut
@@ -88,7 +89,7 @@ class AuthService:
     async def _validate_auth_user(user: User, password: str) -> None:
         if not user:
             raise UserNotFoundException
-        if user.password != password:
+        if not bcrypt_context.verify(password, user.password):
             raise UserNotCorrectPasswordException
 
     @staticmethod
