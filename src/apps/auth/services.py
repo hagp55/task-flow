@@ -31,11 +31,12 @@ class AuthService:
     yandex_client: YandexClient
     mail_client: MailClient
 
-    async def login(self, username: str, password: str) -> UserLoginOut:
-        user: User | None = await self.users_repository.get_user_by_username(
-            username=username,
+    async def login(self, email: str, password: str) -> UserLoginOut:
+        user: User | None = await self.users_repository.get_user_by_email(
+            email=email,
         )
-        await self._validate_auth_user(user, password)
+        await self._validate_auth_user(user=user, password=password)
+        await self.users_repository.update_last_login(user_id=user.id)
         access_token: str = self.generate_access_token(user_id=user.id)
         return UserLoginOut(id=user.id, access_token=access_token)
 

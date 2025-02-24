@@ -1,11 +1,12 @@
 import logging
 from dataclasses import dataclass
 
-from sqlalchemy import insert, select
+from sqlalchemy import insert, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.apps.users.models import User
 from src.core.db import engine
+from src.core.utils.time import now
 
 logger = logging.getLogger(__name__)
 
@@ -32,12 +33,17 @@ class UsersRepository:
         logger.debug("Query:\n%s" % (query.compile(engine, compile_kwargs={"literal_binds": True})))
         return (await self.db_session.execute(query)).scalar()
 
-    async def get_user_by_username(self, *, username: str) -> User | None:
-        query = select(User).where(User.username == username)
-        logger.debug("Query:\n%s" % (query.compile(engine, compile_kwargs={"literal_binds": True})))
-        return (await self.db_session.execute(query)).scalar()
-
     async def get_user_by_email(self, *, email) -> User | None:
         query = select(User).where(User.email == email)
         logger.debug("Query:\n%s" % (query.compile(engine, compile_kwargs={"literal_binds": True})))
         return (await self.db_session.execute(query)).scalar()
+
+    async def update_last_login(self, *, user_id) -> None:
+        await self.db_session.execute(
+            update(User)
+            .where(
+                User.id == user_id,
+            )
+            .values(last_login=now())
+        )
+        await self.db_session.commit()

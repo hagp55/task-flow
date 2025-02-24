@@ -25,7 +25,7 @@ async def login_user(
 ) -> UserLoginOut:
     try:
         return await auth_service.login(
-            payload.username,
+            payload.email,
             payload.password,
         )
     except (

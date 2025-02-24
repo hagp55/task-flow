@@ -25,7 +25,7 @@ Keep track of your tasks, stay organized, and never forget important things! ✅
 - 🔍 **View user information** – get the necessary details.
 
 #### 🔐 **Authorization**
-- 🔑 **Login with username and password** – the classic way.
+- 🔑 **Login with email and password** – the classic way.
 - ✉ **Sign in with Google** – fast and convenient.
 - 📨 **Sign in with Yandex** – another easy option.
 

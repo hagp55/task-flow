@@ -17,6 +17,5 @@ class UserFactory(factory.Factory):
         model = User
 
     id = factory.LazyFunction(lambda: faker.random_int())
-    username = factory.LazyFunction(lambda: faker.name())
     email = factory.LazyFunction(lambda: faker.email())
     first_name = factory.LazyFunction(lambda: faker.name())

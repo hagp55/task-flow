@@ -16,12 +16,12 @@ class TasksService:
     cache_task_repository: CacheTasks
 
     async def get_all(self):
-        if cache_tasks := await self.cache_task_repository.get_all():  # type: ignore
-            return cache_tasks
-        tasks: list[Task] = await self.task_repository.get_all()
-        if tasks:
-            tasks_schema: list[TaskOut] = [TaskOut.model_validate(task) for task in tasks]
-            await self.cache_task_repository.create(tasks_schema)
+        # if cache_tasks := await self.cache_task_repository.get_all():  # type: ignore
+        #     return cache_tasks
+        # tasks: list[Task] = await self.task_repository.get_all()
+        # if tasks:
+        #     tasks_schema: list[TaskOut] = [TaskOut.model_validate(task) for task in tasks]
+        # await self.cache_task_repository.create(tasks_schema)
         return await self.task_repository.get_all()
 
     async def get(self, task_id) -> Task:
@@ -32,7 +32,7 @@ class TasksService:
 
     async def create(self, user_id: int, payload: TaskIn) -> TaskOut:
         task: Task = await self.task_repository.create(user_id, payload)
-        await self.cache_task_repository.delete()
+        # await self.cache_task_repository.delete()
         return TaskOut.model_validate(task)
 
     async def update(self, user_id: int, task_id, payload: TaskIn) -> TaskOut:
