@@ -1,11 +1,14 @@
-from sqlalchemy import MetaData
+import uuid
+from typing import Annotated
+
+from sqlalchemy import Boolean, MetaData, String
 from sqlalchemy.ext.asyncio import (
     AsyncAttrs,
     AsyncEngine,
     async_sessionmaker,
     create_async_engine,
 )
-from sqlalchemy.orm import DeclarativeBase, declared_attr
+from sqlalchemy.orm import DeclarativeBase, declared_attr, mapped_column
 
 from src.core.settings import db
 from src.core.utils.db import camel_to_snake, singular_to_plural
@@ -51,3 +54,35 @@ class Base(AsyncAttrs, DeclarativeBase):
 async def get_async_session():
     async with AsyncSessionFactory() as session:
         yield session
+
+
+# Types for SQLALCHEMY
+uuid_id = Annotated[str, mapped_column(primary_key=True, default=str(uuid.uuid4()))]
+
+str_100 = Annotated[str, mapped_column(String(length=100))]
+str_150 = Annotated[str, mapped_column(String(length=150))]
+str_200 = Annotated[str, mapped_column(String(length=200))]
+str_250 = Annotated[str, mapped_column(String(length=250))]
+str_500 = Annotated[str, mapped_column(String(length=500))]
+
+str_100_or_none = Annotated[str | None, mapped_column(String(length=100))]
+str_150_or_none = Annotated[str | None, mapped_column(String(length=150))]
+str_200_or_none = Annotated[str | None, mapped_column(String(length=200))]
+str_250_or_none = Annotated[str | None, mapped_column(String(length=250))]
+str_500_or_none = Annotated[str | None, mapped_column(String(length=500))]
+
+uniq_str_100 = Annotated[str, mapped_column(String(length=100), unique=True)]
+uniq_str_150 = Annotated[str, mapped_column(String(length=150), unique=True)]
+uniq_str_128 = Annotated[str, mapped_column(String(length=200), unique=True)]
+uniq_str_250 = Annotated[str, mapped_column(String(length=250), unique=True)]
+uniq_str_500 = Annotated[str, mapped_column(String(length=500), unique=True)]
+
+uniq_str_100_or_none = Annotated[str | None, mapped_column(String(length=100), unique=True)]
+uniq_str_150_or_none = Annotated[str | None, mapped_column(String(length=150), unique=True)]
+uniq_str_200_or_none = Annotated[str | None, mapped_column(String(length=100), unique=True)]
+uniq_str_250_or_none = Annotated[str | None, mapped_column(String(length=100), unique=True)]
+uniq_str_500_or_none = Annotated[str | None, mapped_column(String(length=100), unique=True)]
+
+
+boolean_true = Annotated[bool, mapped_column(Boolean, default=True)]
+boolean_false = Annotated[bool, mapped_column(Boolean, default=False)]

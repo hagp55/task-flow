@@ -12,11 +12,8 @@ class FakeUsersRepository:
 
     async def create(
         self,
-        username: str | None = None,
         password: str | None = None,
         email: str | None = None,
-        google_access_token: str | None = None,
-        yandex_access_token: str | None = None,
         first_name: str | None = None,
         last_name: str | None = None,
     ):

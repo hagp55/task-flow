@@ -23,6 +23,9 @@ class Settings(BaseSettings):
     SECRET_KEY: str
     ENVIRONMENT: Literal["dev", "prod", "tests"] = "dev"
     ALLOW_ORIGINS_URLS: list["str"] = []
+    API_VERSION: str = "0.0.1"
+    API_PREFIX: str = "/api"
+    API_PREFIX_VERSION: str = "/v1"
 
     # JTW TOKEN
     JWT_UPDATE_TIME: int = 24
@@ -41,6 +44,7 @@ class Settings(BaseSettings):
     YANDEX_TOKEN_URL: str = "https://oauth.yandex.ru/token"
 
     # BROKER
+    EMAIL_SERVICE: bool = False
     AMQP_BROKER_URL: str = "amqp://guest:guest@localhost:5672//"
 
     # LOGGING
@@ -57,9 +61,9 @@ class Settings(BaseSettings):
 
 class Cache(BaseSettings):
     model_config = config
-    CACHE_HOST: str = "0.0.0.0"
-    CACHE_PORT: int = 6379
-    CACHE_DB: int = 0
+    REDIS_HOST: str = "0.0.0.0"
+    REDIS_PORT: int = 6379
+    REDIS_DB: int = 0
 
 
 class DB(BaseSettings):
@@ -74,10 +78,6 @@ class DB(BaseSettings):
 
     SYNC_PROVIDER: str = "postgresql+psycopg2"
     ASYNC_PROVIDER: str = "postgresql+asyncpg"
-
-    @property
-    def DNS_DB(self) -> str:
-        return f"{self.SYNC_PROVIDER}://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}@{self.POSTGRES_HOST}:{self.POSTGRES_PORT}/{self.POSTGRES_DB}"
 
     @property
     def ASYNC_DNS_DB(self) -> str:

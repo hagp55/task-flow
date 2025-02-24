@@ -1,55 +1,78 @@
+include .env
+export $(shell sed 's/=.*//' .env)
+
 .DEFAULT_GOAL := help
 
-HOST ?= 0.0.0.0
-PORT ?= 8000
+APP_SERVICE = api
+DB_SERVICE = db
 
-run: ## Run the application using uvicorn
-	poetry run uvicorn src.main:app --host $(HOST) --port $(PORT) --reload
-
-run-celery: ## Run the celery
-	poetry run celery -A src.worker.celery worker --loglevel=info
-
-run-flower: ## Run the flower
-	poetry run celery --broker=amqp://guest:guest@localhost:5672// flower --port=5555
-
-run-gunicorn: ## Run the application using gunicorn
-	poetry run gunicorn src.main:app -c src/gunicorn.conf.py --reload
-
-install: ## Install a dependency using poetry
-	@echo "Installing dependency $(LIBRARY)"
-	poetry add $(LIBRARY)
-
-uninstall: ## Uninstall a dependency using poetry
-	@echo "Uninstall dependency $(LIBRARY)"
-	poetry remove $(LIBRARY)
+DC = docker compose
+EXEC = docker exec -it
+LOGS = docker logs
 
 
 # DOCKER
-up:
-	docker compose up -d
+up: ## Build and run all services
+	${DC} up --build -d
 
-down:
+build: ## Rebuild all services
+	${DC} --build
+
+full-build: ## Rebuild all services and refresh cache
+	${DC} build --no-cache
+
+restart: ## Restart all services
+	${DC} restart
+
+restart-api: ## Restart only api
+	${DC} restart ${APP_SERVICE}
+
+restart-db: ## Restart only api
+	${DC} restart ${DB_SERVICE}
+
+down: ## Down all services
 	docker compose down
+
+logs: ## Show logs all services
+	${DC} logs --follow
+
+api-logs: ## Show logs only api
+	${DC} logs --follow ${APP_SERVICE}
+
+api-shell: ## Go to the api shell
+	${DC} exec ${APP_SERVICE} /bin/bash
+
+db-logs: ## Show logs only database
+	${DC} logs --follow ${DB_SERVICE}
+
+db-shell: ## Go to the db shell
+	${DC} exec ${APP_SERVICE} /bin/bash
+
+db-psql: ## Go to the psql
+	${DC} exec ${DB_SERVICE} psql -U ${POSTGRES_USER} -d ${POSTGRES_DB} -p ${POSTGRES_PORT}
+
+db-destroy: ## Delete volume database
+	docker volume rm pomodoro-time_pg_data
 
 
 # ALEMBIC MIGRATIONS
-alembic-migration-init: # Create alembic template for migrations
-	alembic init migrations
+alembic-migration-init: ## Create alembic template for migrations
+	${DC} exec ${APP_SERVICE} alembic init migrations
 
-alembic-migration-history: # Show all alembic migrations
-	alembic history --verbose
+alembic-migration-history: ## Show all alembic migrations
+	${DC} exec ${APP_SERVICE} alembic history --verbose
 
-alembic-migration-generate: # Generate migrations with message
-	alembic revision --autogenerate -m "$(m)"
+alembic-migration-generate: ## Generate migrations with message
+	${DC} exec ${APP_SERVICE} alembic revision --autogenerate -m "$(m)"
 
-alembic-migration-upgrade: # Apply all migrations
-	alembic upgrade head
+alembic-migration-upgrade: ## Apply all migrations
+	${DC} exec ${APP_SERVICE} alembic upgrade head
 
-alembic-migration-downgrade: # downgrade -1 migration
-	alembic downgrade -1
+alembic-migration-downgrade: ## downgrade -1 migration
+	${DC} exec ${APP_SERVICE} alembic downgrade -1
 
-alembic-migration-downgrade-base: # downgrade all migrations
-	alembic downgrade base
+alembic-migration-downgrade-base: ## downgrade all migrations
+	${DC} exec ${APP_SERVICE} alembic downgrade base
 
 
 # LINTERS
@@ -66,8 +89,9 @@ tests: # Run all tests
 	pytest tests -vs
 
 
+# HELP
 help: ## Show this help message
 	@echo "Usage: make [command]"
 	@echo ""
 	@echo "Commands:"
-	@grep -E '^[a-zA-Z0-9_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  %-20s %s\n", $$1, $$2}'
+	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(firstword $(MAKEFILE_LIST)) | awk 'BEGIN {FS = ":.*?## "}; {printf "  %-40s %s\n", $$1, $$2}'

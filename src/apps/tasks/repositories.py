@@ -1,11 +1,14 @@
 import logging
 
 from sqlalchemy import delete, insert, select, update
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.apps.tasks.models import Category, Task
+from src.apps.projects.models import Project
+from src.apps.tasks.models import Task
 from src.apps.tasks.schemas import TaskIn
 from src.core.db import engine
+from src.exceptions import ProjectNotFoundException
 
 logger: logging.Logger = logging.getLogger(__name__)
 
@@ -15,47 +18,56 @@ class TaskRepository:
         self.db_session: AsyncSession = session
 
     async def create(self, user_id: int, payload: TaskIn) -> Task:
-        statement = (
-            insert(Task)
-            .values(
-                user_id=user_id,
-                **payload.model_dump(),
+        try:
+            query = (
+                insert(Task)
+                .values(
+                    user_id=user_id,
+                    **payload.model_dump(),
+                )
+                .returning(Task)
             )
-            .returning(Task)
-        )
-        logger.debug(statement.compile(engine, compile_kwargs={"literal_binds": True}))
-        result = await self.db_session.execute(statement)
-        task = result.scalar()
-        await self.db_session.commit()
-        logger.debug(task)
-        return task
+            logger.debug(
+                "Query:\n%s" % (query.compile(engine, compile_kwargs={"literal_binds": True})),
+            )
+            result = await self.db_session.execute(query)
+            task = result.scalar()
+            await self.db_session.commit()
+            logger.debug(task)
+            return task
+        except IntegrityError:
+            raise ProjectNotFoundException
 
     async def get_all(self) -> list[Task]:
-        statement = select(Task)
-        logger.debug(statement.compile(engine, compile_kwargs={"literal_binds": True}))
-        result = await self.db_session.execute(statement)
+        query = select(Task)
+        logger.debug(
+            "Query:\n%s" % (query.compile(engine, compile_kwargs={"literal_binds": True})),
+        )
+        result = await self.db_session.execute(query)
         return list(result.scalars().all())
 
     async def get(self, task_id: int) -> Task:
-        statement = select(Task).where(Task.id == task_id)
-        logger.debug(statement.compile(engine, compile_kwargs={"literal_binds": True}))
-        result = await self.db_session.execute(statement)
+        query = select(Task).where(Task.id == task_id)
+        logger.debug(
+            "Query:\n%s" % (query.compile(engine, compile_kwargs={"literal_binds": True})),
+        )
+        result = await self.db_session.execute(query)
         return result.scalar()
 
     async def get_task_by_user(self, user_id: int, task_id: int) -> Task:
-        statement = select(Task).where(
+        query = select(Task).where(
             Task.user_id == user_id,
             Task.id == task_id,
         )
-        logger.debug(statement.compile(engine, compile_kwargs={"literal_binds": True}))
-        result = await self.db_session.execute(statement)
+        logger.debug(query.compile(engine, compile_kwargs={"literal_binds": True}))
+        result = await self.db_session.execute(query)
         return result.scalar()
 
-    async def get_tasks_by_category_name(self, category_name: str) -> list[Task]:
-        query = (
-            select(Task).join(Category, Task.category_id == Category.id).where(Category.name == category_name)
+    async def get_tasks_by_project_name(self, project_name: str) -> list[Task]:
+        query = select(Task).join(Project, Task.project_id == Project.id).where(Project.name == project_name)
+        logger.debug(
+            "Query:\n%s" % (query.compile(engine, compile_kwargs={"literal_binds": True})),
         )
-        logger.debug(query.compile(engine, compile_kwargs={"literal_binds": True}))
         return self.db_session.execute(query).scalars().all()
 
     async def update(self, user_id: int, task_id: int, payload: TaskIn) -> Task:
@@ -70,14 +82,18 @@ class TaskRepository:
             )
             .returning(Task.id)
         )
-        logger.debug(query.compile(engine, compile_kwargs={"literal_binds": True}))
+        logger.debug(
+            "Query:\n%s" % (query.compile(engine, compile_kwargs={"literal_binds": True})),
+        )
         result = await self.db_session.execute(query)
         task_id = result.scalar()
         await self.db_session.commit()
         return await self.get(task_id)
 
     async def delete(self, task_id: int) -> None:
-        statement = delete(Task).where(Task.id == task_id)
-        logger.debug(statement.compile(engine, compile_kwargs={"literal_binds": True}))
-        await self.db_session.execute(statement)
+        query = delete(Task).where(Task.id == task_id)
+        logger.debug(
+            "Query:\n%s" % (query.compile(engine, compile_kwargs={"literal_binds": True})),
+        )
+        await self.db_session.execute(query)
         await self.db_session.commit()

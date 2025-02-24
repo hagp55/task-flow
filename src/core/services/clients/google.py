@@ -24,7 +24,6 @@ class GoogleClient:
             )
             google_data = GoogleUserDataOut(
                 **response.json(),
-                google_access_token=access_token,
             )
             logger.info(google_data)
             return google_data

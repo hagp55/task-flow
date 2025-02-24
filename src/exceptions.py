@@ -3,7 +3,7 @@ class UserNotFoundException(Exception):
 
 
 class UserAlreadyExistsException(Exception):
-    detail: str = "User not found"
+    detail: str = "User with this email already exists"
 
 
 class UserNotCorrectPasswordException(Exception):
@@ -20,3 +20,7 @@ class TokenHasNotValidSignatureException(Exception):
 
 class TaskNotFoundException(Exception):
     detail: str = "Task not found"
+
+
+class ProjectNotFoundException(Exception):
+    detail: str = "Project not found"

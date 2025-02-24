@@ -7,8 +7,9 @@ from sqlalchemy import pool
 from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
 
-from src.apps.tasks.models import Category, Task  # noqa
-from src.apps.users.models import User  # noqa
+from src.apps.tasks.models import Task as Task
+from src.apps.users.models import User as User
+from src.apps.projects.models import Project as Project
 from src.core.db import Base, db
 
 config = context.config

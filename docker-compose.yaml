@@ -1,41 +1,37 @@
 services:
-  pomodoro_api:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: pomodoro_api_container
-    command: sh -c "alembic upgrade head && poetry run uvicorn src.main:app --host=0.0.0.0 --port=8000 --reload"
-    env_file:
-      - .env
+  db:
+    image: postgres:16.8-alpine3.21
     volumes:
-      - .:/app
-    ports:
-      - "8000:8000"
-    restart: unless-stopped
-    depends_on:
-      - pomodoro_db
-
-  pomodoro_db:
-    image: postgres:16.3-alpine
-    container_name: pomodoro_db_container
-    environment:
-      POSTGRES_DB: ${POSTGRES_DB}
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_PORT: ${POSTGRES_PORT}
-    env_file:
-      - .env
+      - pg_data:/var/lib/postgresql/data/
+      - ./init-test_db.sh:/docker-entrypoint-initdb.d/init-test_db.sh
     healthcheck:
       interval: 10s
       retries: 10
       test: "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"
       timeout: 2s
-    volumes:
-      - pg_data:/var/lib/postgresql/data/
-      - ./init-test_db.sh:/docker-entrypoint-initdb.d/init-test_db.sh
+    env_file:
+      - .env
     ports:
       - "${POSTGRES_PORT}:5432"
     restart: unless-stopped
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: >
+      sh -c "
+        alembic upgrade head &&
+        poetry run uvicorn src.main:app --host=${API_HOST} --port=${API_PORT} --reload"
+    volumes:
+      - .:/app
+    env_file:
+      - .env
+    ports:
+      - "${API_PORT}:${API_PORT}"
+    restart: unless-stopped
+    depends_on:
+      - db
 
   redis:
     image: redis:7.2.7-alpine3.21

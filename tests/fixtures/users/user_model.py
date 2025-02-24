@@ -17,8 +17,5 @@ class UserFactory(factory.Factory):
         model = User
 
     id = factory.LazyFunction(lambda: faker.random_int())
-    username = factory.LazyFunction(lambda: faker.name())
     email = factory.LazyFunction(lambda: faker.email())
     first_name = factory.LazyFunction(lambda: faker.name())
-    google_access_token = factory.LazyFunction(lambda: faker.sha256())
-    yandex_access_token = factory.LazyFunction(lambda: faker.sha256())
