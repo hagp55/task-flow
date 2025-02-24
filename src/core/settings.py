@@ -26,6 +26,8 @@ class Settings(BaseSettings):
     API_VERSION: str = "0.0.1"
     API_PREFIX: str = "/api"
     API_PREFIX_VERSION: str = "/v1"
+    ADMIN_URL: str = "admin"
+    ADMIN_TITLE: str = "Admin"
 
     # JTW TOKEN
     JWT_UPDATE_TIME: int = 24

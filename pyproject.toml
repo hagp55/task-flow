@@ -29,6 +29,8 @@ email-validator = "^2.2.0"
 passlib = "^1.7.4"
 cryptography = "^44.0.1"
 bcrypt = "^4.2.1"
+sqladmin = "^0.20.1"
+itsdangerous = "^2.2.0"
 
 
 [tool.poetry.group.linter.dependencies]
