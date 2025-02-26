@@ -75,9 +75,11 @@ def get_project_service(
 def get_tasks_service(
     task_repository: Annotated[TaskRepository, Depends(get_tasks_repository)],
     cache_task_repository: Annotated[CacheTasks, Depends(get_cache_tasks_repository)],
+    project_repository: Annotated[ProjectRepository, Depends(get_project_repository)],
 ) -> TasksService:
     return TasksService(
         task_repository=task_repository,
+        project_repository=project_repository,
         cache_task_repository=cache_task_repository,
     )
 

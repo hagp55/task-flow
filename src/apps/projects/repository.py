@@ -2,11 +2,9 @@ import logging
 from dataclasses import dataclass
 
 from sqlalchemy import delete, insert, select, update
-from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.apps.projects.models import Project
-from src.exceptions import ProjectAlreadyExistsException
 
 logger = logging.getLogger(__name__)
 
@@ -29,39 +27,41 @@ class ProjectRepository:
             )
         )
 
+    async def get_by_name(self, *, user_id: int, name: str) -> Project | None:
+        return await self.session.scalar(
+            select(Project).where(
+                Project.name == name,
+                Project.user_id == user_id,
+            )
+        )
+
     async def create(self, *, user_id: int, payload: dict) -> Project | None:
-        try:
-            project: Project | None = (
-                await self.session.execute(
-                    insert(Project)
-                    .values(
-                        user_id=user_id,
-                        **payload,
-                    )
-                    .returning(Project)
+        project: Project | None = (
+            await self.session.execute(
+                insert(Project)
+                .values(
+                    user_id=user_id,
+                    **payload,
                 )
-            ).scalar()
-            await self.session.commit()
-            return project
-        except IntegrityError:
-            raise ProjectAlreadyExistsException
+                .returning(Project)
+            )
+        ).scalar()
+        await self.session.commit()
+        return project
 
     async def update(self, *, project_id: int, payload: dict) -> Project | None:
-        try:
-            project: Project | None = (
-                await self.session.execute(
-                    update(Project)
-                    .where(
-                        Project.id == project_id,
-                    )
-                    .values(**payload)
-                    .returning(Project)
+        project: Project | None = (
+            await self.session.execute(
+                update(Project)
+                .where(
+                    Project.id == project_id,
                 )
-            ).scalar()
-            await self.session.commit()
-            return project
-        except IntegrityError:
-            raise ProjectAlreadyExistsException
+                .values(**payload)
+                .returning(Project)
+            )
+        ).scalar()
+        await self.session.commit()
+        return project
 
     async def delete(self, *, project_id: int) -> None:
         await self.session.execute(delete(Project).where(Project.id == project_id))

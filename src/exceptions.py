@@ -22,6 +22,10 @@ class TaskNotFoundException(Exception):
     detail: str = "Task not found"
 
 
+class TaskAlreadyExistsException(Exception):
+    detail: str = "Task already exists"
+
+
 class ProjectNotFoundException(Exception):
     detail: str = "Project not found"
 

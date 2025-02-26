@@ -6,7 +6,7 @@ from fastapi import APIRouter, Depends, HTTPException, Response, status
 from src.apps.tasks.schemas import TaskIn, TaskOut
 from src.apps.tasks.services import TasksService
 from src.dependencies import get_request_user_id, get_tasks_service
-from src.exceptions import ProjectNotFoundException, TaskNotFoundException
+from src.exceptions import ProjectNotFoundException, TaskAlreadyExistsException, TaskNotFoundException
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -33,7 +33,7 @@ async def create_task(
     """
     try:
         return await task_service.create(user_id=user_id, payload=payload)
-    except ProjectNotFoundException as e:
+    except (ProjectNotFoundException, TaskAlreadyExistsException) as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=str(e.detail),
@@ -124,9 +124,9 @@ async def update_task(
             task_id=task_id,
             payload=payload,
         )
-    except (TaskNotFoundException, ProjectNotFoundException) as e:
+    except (TaskNotFoundException, ProjectNotFoundException, TaskAlreadyExistsException) as e:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
+            status_code=status.HTTP_400_BAD_REQUEST,
             detail=str(e.detail),
         )
 
