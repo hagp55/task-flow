@@ -22,6 +22,12 @@ class UserSignUpIn(InputApiSchema):
     last_name: str | None = Field(min_length=2, max_length=255, examples=[None])
 
 
+class ChangeUserPasswordIn(InputApiSchema):
+    email: EmailStr = Field(min_length=6, max_length=250, examples=["beazley@example.com"])
+    old_password: str = Field(min_length=6, max_length=250, examples=["Str0ngP@ssw0rd!"])
+    new_password: str = Field(min_length=6, max_length=250, examples=["NewStr0ngP@ssw0rd!"])
+
+
 class UserMeOut(OutputApiSchema):
     first_name: str | None = Field(min_length=2, max_length=250, examples=["David"])
     last_name: str | None = Field(min_length=2, max_length=255, examples=["Beazley"])

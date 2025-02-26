@@ -2,10 +2,10 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, status
 
-from src.apps.users.schemas import UserLoginOut, UserMeOut, UserSignUpIn
+from src.apps.users.schemas import ChangeUserPasswordIn, UserLoginOut, UserMeOut, UserSignUpIn
 from src.apps.users.services import UsersService
 from src.dependencies import get_request_user_id, get_users_service
-from src.exceptions import UserAlreadyExistsException, UserNotFoundException
+from src.exceptions import UserAlreadyExistsException, UserNotCorrectPasswordException, UserNotFoundException
 
 __all__ = ("router",)
 
@@ -32,10 +32,29 @@ async def create_user(
         )
 
 
+@router.put(
+    "/change_password",
+    name="Change password by user",
+    status_code=status.HTTP_200_OK,
+)
+async def user_change_password(
+    payload: ChangeUserPasswordIn,
+    users_service: Annotated[UsersService, Depends(get_users_service)],
+) -> dict[str, str]:
+    try:
+        await users_service.change_password(payload=payload)
+        return {"message": "password was successfully updated"}
+    except (UserNotFoundException, UserNotCorrectPasswordException) as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e.detail),
+        )
+
+
 @router.get(
     "/me",
     response_model=UserMeOut,
-    summary="Get info about me 🧐",
+    name="Get info about me 🧐",
     status_code=status.HTTP_200_OK,
 )
 async def me(

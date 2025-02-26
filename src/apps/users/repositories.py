@@ -47,3 +47,13 @@ class UsersRepository:
             .values(last_login=now())
         )
         await self.session.commit()
+
+    async def change_password(self, *, user_id: int, password: str) -> None:
+        await self.session.execute(
+            update(User)
+            .where(
+                User.id == user_id,
+            )
+            .values(password=password)
+        )
+        await self.session.commit()

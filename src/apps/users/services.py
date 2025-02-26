@@ -1,11 +1,14 @@
+import logging
 from dataclasses import dataclass
 
 from src.apps.auth.security import bcrypt_context
 from src.apps.auth.services import AuthService
 from src.apps.users.models import User
 from src.apps.users.repositories import UsersRepository
-from src.apps.users.schemas import UserLoginOut, UserMeOut, UserSignUpIn
+from src.apps.users.schemas import ChangeUserPasswordIn, UserLoginOut, UserMeOut, UserSignUpIn
 from src.exceptions import UserAlreadyExistsException, UserNotFoundException
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -28,3 +31,15 @@ class UsersService:
         if not user:
             raise UserNotFoundException
         return UserMeOut.model_validate(user)
+
+    async def change_password(self, *, payload: ChangeUserPasswordIn) -> None:
+        user: User | None = await self.users_repository.get_user_by_email(email=payload.email)
+        if user:
+            self.auth_service._validate_auth_user(user, payload.old_password)
+            new_hashed_password: str = bcrypt_context.hash(payload.new_password)
+            await self.users_repository.change_password(
+                user_id=user.id,
+                password=new_hashed_password,
+            )
+            return
+        raise UserNotFoundException

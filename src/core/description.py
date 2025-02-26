@@ -1,9 +1,9 @@
-TITLE = "TaskNest"
+TITLE = "Task Mania"
 
 DESCRIPTION = """
-## 🚀 **TaskNest API** – Manage Your Tasks and Projects with Easy!
+## 🚀 **Task Mania API** – Manage Your Tasks and Projects with Easy!
 
-Welcome to **TaskNest API** – your reliable assistant for task and project management.
+Welcome to **Task Mania API** – your reliable assistant for task and project management.
 Keep track of your tasks, stay organized, and never forget important things! ✅
 
 ### 🔥 **What Can You Do?**
