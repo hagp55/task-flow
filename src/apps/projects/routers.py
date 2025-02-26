@@ -4,8 +4,8 @@ from fastapi import APIRouter, Depends, HTTPException, Path, Response, status
 
 from src.apps.projects.schemas import ProjectIn, ProjectOut
 from src.apps.projects.services import ProjectService
-from src.core.dependencies import get_project_service, get_request_user_id
-from src.exceptions import ProjectNotFoundException
+from src.dependencies import get_project_service, get_request_user_id
+from src.exceptions import ProjectAlreadyExistsException, ProjectNotFoundException
 
 router = APIRouter()
 
@@ -21,12 +21,26 @@ async def create_project(
     user_id: Annotated[int, Depends(get_request_user_id)],
     project_service: Annotated[ProjectService, Depends(get_project_service)],
 ) -> ProjectOut:
-    return await project_service.create(user_id=user_id, payload=payload)
+    """
+    Create a new project with the provided information:
+
+    - **name**: Name of the project (must be between 2 and 250 characters).
+    - **user_id**: User ID who owns the project.
+
+    Returns the newly created project with its details.
+    """
+    try:
+        return await project_service.create(user_id=user_id, payload=payload)
+    except ProjectAlreadyExistsException as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e.detail),
+        )
 
 
 @router.get(
     "/",
-    name="Get projects 📖 ",
+    name="Get projects 📖",
     response_model=list[ProjectOut],
     status_code=status.HTTP_200_OK,
 )
@@ -34,6 +48,11 @@ async def get_projects(
     user_id: Annotated[int, Depends(get_request_user_id)],
     project_service: Annotated[ProjectService, Depends(get_project_service)],
 ) -> list[ProjectOut]:
+    """
+    Get a list of all projects associated with the authenticated user.
+
+    Returns a list of project objects with their details.
+    """
     return await project_service.get_all(user_id=user_id)
 
 
@@ -48,6 +67,14 @@ async def get_project(
     user_id: Annotated[int, Depends(get_request_user_id)],
     project_service: Annotated[ProjectService, Depends(get_project_service)],
 ) -> ProjectOut:
+    """
+    Get the details of a specific project by its ID.
+
+    - **project_id**: ID of the project to be fetched.
+    - **user_id**: The user ID of the authenticated user.
+
+    Returns the details of the specified project.
+    """
     try:
         return await project_service.get(user_id=user_id, project_id=project_id)
     except ProjectNotFoundException as e:
@@ -69,6 +96,15 @@ async def update_project(
     user_id: Annotated[int, Depends(get_request_user_id)],
     project_service: Annotated[ProjectService, Depends(get_project_service)],
 ) -> ProjectOut:
+    """
+    Update the details of an existing project.
+
+    - **project_id**: ID of the project to be updated.
+    - **payload**: Data to update the project (name).
+    - **user_id**: The user ID of the authenticated user.
+
+    Returns the updated project details.
+    """
     try:
         return await project_service.update(
             user_id=user_id,
@@ -78,6 +114,11 @@ async def update_project(
     except ProjectNotFoundException as e:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
+            detail=str(e.detail),
+        )
+    except ProjectAlreadyExistsException as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
             detail=str(e.detail),
         )
 
@@ -93,6 +134,14 @@ async def delete_project(
     user_id: Annotated[int, Depends(get_request_user_id)],
     project_service: Annotated[ProjectService, Depends(get_project_service)],
 ) -> None:
+    """
+    Delete a specific project by its ID.
+
+    - **project_id**: ID of the project to be deleted.
+    - **user_id**: The user ID of the authenticated user.
+
+    Returns a 204 status code if the project is successfully deleted.
+    """
     try:
         await project_service.delete(user_id=user_id, project_id=project_id)
     except ProjectNotFoundException as e:

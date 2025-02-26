@@ -1,8 +1,8 @@
 """Initial migrations
 
-Revision ID: 90508ae5da04
+Revision ID: fb9e6b49d436
 Revises:
-Create Date: 2025-02-24 05:59:06.661391
+Create Date: 2025-02-24 12:55:57.316311
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '90508ae5da04'
+revision: str = 'fb9e6b49d436'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -27,7 +27,7 @@ def upgrade() -> None:
     sa.Column('first_name', sa.String(length=250), nullable=True),
     sa.Column('last_name', sa.String(length=250), nullable=True),
     sa.Column('date_joined', sa.DateTime(), server_default=sa.text('now()'), nullable=True),
-    sa.Column('last_login', sa.DateTime(), nullable=True),
+    sa.Column('last_login', sa.DateTime(), server_default=sa.text('now()'), nullable=True),
     sa.Column('is_active', sa.Boolean(), nullable=False),
     sa.Column('is_staff', sa.Boolean(), nullable=False),
     sa.Column('is_super_user', sa.Boolean(), nullable=False),
@@ -41,7 +41,8 @@ def upgrade() -> None:
     sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
     sa.Column('updated_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
     sa.ForeignKeyConstraint(['user_id'], ['users.id'], name=op.f('projects_user_id_fkey'), ondelete='CASCADE'),
-    sa.PrimaryKeyConstraint('id', name=op.f('projects_pkey'))
+    sa.PrimaryKeyConstraint('id', name=op.f('projects_pkey')),
+    sa.UniqueConstraint('name', 'user_id', name=op.f('projects_name_key'))
     )
     op.create_table('tasks',
     sa.Column('id', sa.Integer(), nullable=False),

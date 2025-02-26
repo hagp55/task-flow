@@ -12,7 +12,7 @@ v1_router.include_router(router=healthcheck_router, prefix="/healthcheck", tags=
 v1_router.include_router(router=project_router, prefix="/projects", tags=["Projects 👨‍💻"])
 v1_router.include_router(router=task_router, prefix="/tasks", tags=["Tasks 📆"])
 v1_router.include_router(router=user_router, prefix="/users", tags=["Users 👨‍🦱"])
-v1_router.include_router(router=auth_router, prefix="/auth", tags=["Auth 🙋‍♂️"])
+v1_router.include_router(router=auth_router, prefix="/auth", tags=["Auth 🔐"])
 
 
 api_router = APIRouter(prefix=settings.API_PREFIX)

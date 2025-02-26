@@ -6,7 +6,7 @@ from fastapi.responses import RedirectResponse
 
 from src.apps.auth.services import AuthService
 from src.apps.users.schemas import UserLoginIn, UserLoginOut
-from src.core.dependencies import get_auth_service
+from src.dependencies import get_auth_service
 from src.exceptions import UserNotCorrectPasswordException, UserNotFoundException
 
 router = APIRouter()
@@ -24,22 +24,22 @@ async def login_user(
     auth_service: Annotated[AuthService, Depends(get_auth_service)],
 ) -> UserLoginOut:
     try:
-        return await auth_service.login(
-            payload.email,
-            payload.password,
-        )
+        return await auth_service.login(payload.email, payload.password)
     except (
         UserNotFoundException,
         UserNotCorrectPasswordException,
     ) as e:
-        raise HTTPException(status_code=401, detail=e.detail)
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail=str(e.detail),
+        )
 
 
 @router.get(
     "/login/google",
     response_class=RedirectResponse,
     name="For signup 🤗 Go to link in description ✨🚀",
-    description="Go to link in any browser <b>http://localhost:8000/api/v1/auth/login/google</b>",
+    description="Go to the link in any browser <b>http://localhost:8000/api/v1/auth/login/google</b>",
 )
 async def login_user_with_google(
     auth_service: Annotated[AuthService, Depends(get_auth_service)],
@@ -63,7 +63,7 @@ async def google_auth(
     "/login/yandex",
     response_class=RedirectResponse,
     name="For signup 🤗 Go to link in description ✨🚀",
-    description="For signup go to link in any browser <b>http://localhost:8000/api/v1/auth/login/yandex</b>",
+    description="Go to the link in any browser <b>http://localhost:8000/api/v1/auth/login/yandex</b>",
 )
 async def login_user_with_yandex(
     auth_service: Annotated[AuthService, Depends(get_auth_service)],

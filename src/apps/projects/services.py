@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from src.apps.projects.models import Project
 from src.apps.projects.repository import ProjectRepository
 from src.apps.projects.schemas import ProjectIn, ProjectOut
-from src.exceptions import ProjectNotFoundException
+from src.exceptions import ProjectAlreadyExistsException, ProjectNotFoundException
 
 logger = logging.getLogger(__name__)
 
@@ -14,11 +14,17 @@ class ProjectService:
     project_repository: ProjectRepository
 
     async def create(self, *, user_id: int, payload: ProjectIn) -> ProjectOut:
-        project: Project | None = await self.project_repository.create(
+        exists_project: Project | None = await self.project_repository.get_by_name(
             user_id=user_id,
-            payload=payload.model_dump(),
+            name=payload.name,
         )
-        return ProjectOut.model_validate(project)
+        if not exists_project:
+            project: Project | None = await self.project_repository.create(
+                user_id=user_id,
+                payload=payload.model_dump(),
+            )
+            return ProjectOut.model_validate(project)
+        raise ProjectAlreadyExistsException
 
     async def get_all(self, user_id: int) -> list[ProjectOut]:
         projects: list[Project] = await self.project_repository.get_all(user_id=user_id)
@@ -38,13 +44,19 @@ class ProjectService:
             user_id=user_id,
             project_id=project_id,
         )
-        if project is None:
-            raise ProjectNotFoundException
-        updated_project: Project | None = await self.project_repository.update(
-            project_id=project.id,
-            payload=payload.model_dump(),
-        )
-        return ProjectOut.model_validate(updated_project)
+        if project:
+            exists_project: Project | None = await self.project_repository.get_by_name(
+                user_id=user_id,
+                name=payload.name,
+            )
+            if not exists_project:
+                updated_project: Project | None = await self.project_repository.update(
+                    project_id=project.id,
+                    payload=payload.model_dump(),
+                )
+                return ProjectOut.model_validate(updated_project)
+            raise ProjectAlreadyExistsException
+        raise ProjectNotFoundException
 
     async def delete(self, *, user_id: int, project_id: int) -> None:
         project: Project | None = await self.project_repository.get(

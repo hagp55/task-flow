@@ -7,12 +7,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.apps.healthcheck.schemas import HealthCheckDBResponseSchema, HealthCheckResponseSchema
 from src.core.db import get_async_session
-from src.core.dependencies import get_request_user_id
+from src.dependencies import get_request_staff_or_superuser_user_id
 
-__all__ = ("router",)
-
-
-router = APIRouter()
+router = APIRouter(dependencies=[Depends(get_request_staff_or_superuser_user_id)])
 
 
 @router.get(
@@ -21,9 +18,7 @@ router = APIRouter()
     name="Get app status 🌡️",
     response_model=HealthCheckResponseSchema,
 )
-async def get_healthcheck_status(
-    user_id: Annotated[int, Depends(get_request_user_id)],
-) -> HealthCheckResponseSchema:
+async def get_healthcheck_status() -> HealthCheckResponseSchema:
     return HealthCheckResponseSchema()
 
 
@@ -33,7 +28,6 @@ async def get_healthcheck_status(
     response_model=HealthCheckDBResponseSchema,
 )
 async def get_healthcheck_status_db(
-    user_id: Annotated[int, Depends(get_request_user_id)],
     session: Annotated[AsyncSession, Depends(get_async_session)],
 ) -> HealthCheckDBResponseSchema:
     try:
@@ -51,8 +45,6 @@ async def get_healthcheck_status_db(
     "/sentry-debug",
     name="Send error to the sentry 🤒",
 )
-async def trigger_error(
-    user_id: Annotated[int, Depends(get_request_user_id)],
-):
+async def trigger_error():
     sentry_sdk.capture_message("This a test error")
     division_by_zero = 1 / 0

@@ -14,16 +14,23 @@ class ProjectRepository:
     session: AsyncSession
 
     async def get_all(self, user_id: int) -> list[Project]:
-        return list(
-            await self.session.scalars(
-                select(Project).where(Project.user_id == user_id),
-            )
+        result = await self.session.execute(
+            select(Project).where(Project.user_id == user_id),
         )
+        return list(result.scalars().unique())
 
     async def get(self, *, user_id: int, project_id: int) -> Project | None:
         return await self.session.scalar(
             select(Project).where(
                 Project.id == project_id,
+                Project.user_id == user_id,
+            )
+        )
+
+    async def get_by_name(self, *, user_id: int, name: str) -> Project | None:
+        return await self.session.scalar(
+            select(Project).where(
+                Project.name == name,
                 Project.user_id == user_id,
             )
         )
