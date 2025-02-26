@@ -35,7 +35,7 @@ class AuthService:
         user: User | None = await self.users_repository.get_user_by_email(
             email=email,
         )
-        await self._validate_auth_user(user=user, password=password)
+        self._validate_auth_user(user=user, password=password)
         await self.users_repository.update_last_login(user_id=user.id)
         access_token: str = self.generate_access_token(user_id=user.id)
         return UserLoginOut(id=user.id, access_token=access_token)
@@ -87,7 +87,7 @@ class AuthService:
         )
 
     @staticmethod
-    async def _validate_auth_user(user: User, password: str) -> None:
+    def _validate_auth_user(user: User, password: str) -> None:
         if not user:
             raise UserNotFoundException
         if not bcrypt_context.verify(password, user.password):
