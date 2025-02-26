@@ -27,7 +27,7 @@ async def create_user(
         return await users_service.create(payload=payload)
     except UserAlreadyExistsException as e:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
+            status_code=status.HTTP_409_CONFLICT,
             detail=str(e.detail),
         )
 

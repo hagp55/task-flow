@@ -50,7 +50,7 @@ class Settings(BaseSettings):
     AMQP_BROKER_URL: str = "amqp://guest:guest@localhost:5672//"
 
     # LOGGING
-    SENTRY_URL: str
+    SENTRY_URL: str = ""
 
     @property
     def GOOGLE_REDIRECT_URL(self) -> str:
@@ -58,7 +58,9 @@ class Settings(BaseSettings):
 
     @property
     def YANDEX_REDIRECT_URL(self) -> str:
-        return f"https://oauth.yandex.ru/authorize?response_type=code&client_id={self.YANDEX_CLIENT_ID}&force_confirm=yes"
+        return (
+            f"https://oauth.yandex.ru/authorize?response_type=code&client_id={self.YANDEX_CLIENT_ID}&force_confirm=yes"
+        )
 
 
 class Cache(BaseSettings):

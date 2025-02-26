@@ -99,7 +99,8 @@ pythonpath = [
 ]
 asyncio_mode="auto"
 markers = [
-
+    "unittest: marks tests as unittest tests (deselect with '-m \"not unittest\"')",
+    "integration: marks tests as integration tests (deselect with '-m \"not integration\"')",
 ]
 
 [tool.coverage.run]
