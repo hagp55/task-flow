@@ -34,7 +34,7 @@ async def create_user(
 
 @router.put(
     "/change_password",
-    name="Change password by user",
+    name="Change password by user ✏️",
     status_code=status.HTTP_200_OK,
 )
 async def user_change_password(

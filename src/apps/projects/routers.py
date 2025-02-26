@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException, Path, Response, status
 
 from src.apps.projects.schemas import ProjectIn, ProjectOut
 from src.apps.projects.services import ProjectService
-from src.core.pagintaion import Pagination, pagination_params
+from src.core.pagination import Pagination, pagination_params
 from src.dependencies import get_project_service, get_request_user_id
 from src.exceptions import ProjectAlreadyExistsException, ProjectNotFoundException
 

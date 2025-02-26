@@ -22,6 +22,7 @@ Keep track of your tasks, stay organized, and never forget important things! ✅
 
 #### 👤 **Users**
 - 🔹 **Register users** – create accounts easily.
+- ✏️ **Change password** – change password accounts easily.
 - 🔍 **View user information** – get the necessary details.
 
 #### 🔐 **Authorization**

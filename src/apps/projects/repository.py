@@ -26,7 +26,7 @@ class ProjectRepository:
             .limit(per_page)
             .offset(page - 1 if page == 1 else (page - 1) * per_page)
             .order_by(
-                order(Project.updated_at),
+                order(Project.created_at),
             ),
         )
         return list(result.scalars().unique())

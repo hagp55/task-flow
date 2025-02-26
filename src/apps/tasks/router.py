@@ -5,6 +5,7 @@ from fastapi import APIRouter, Depends, HTTPException, Response, status
 
 from src.apps.tasks.schemas import TaskIn, TaskOut
 from src.apps.tasks.services import TasksService
+from src.core.pagination import Pagination, pagination_params
 from src.dependencies import get_request_user_id, get_tasks_service
 from src.exceptions import ProjectNotFoundException, TaskAlreadyExistsException, TaskNotFoundException
 
@@ -49,6 +50,7 @@ async def create_task(
 async def get_tasks(
     task_service: Annotated[TasksService, Depends(get_tasks_service)],
     user_id: Annotated[int, Depends(get_request_user_id)],
+    pagination: Annotated[Pagination, Depends(pagination_params)],
 ) -> list[TaskOut]:
     """
     Get a list of all tasks for the authenticated user:
@@ -63,7 +65,7 @@ async def get_tasks(
 
     If the user has no tasks, an empty list will be returned.
     """
-    return await task_service.get_all(user_id=user_id)
+    return await task_service.get_all(user_id=user_id, pagination=pagination)
 
 
 @router.get(

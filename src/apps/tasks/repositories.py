@@ -26,12 +26,23 @@ class TaskRepository:
         await self.session.commit()
         return task
 
-    async def get_all(self, *, user_id: int) -> list[Task]:
-        tasks = await self.session.execute(
-            select(Task).where(Task.user_id == user_id),
+    async def get_all(
+        self,
+        user_id: int,
+        order,
+        page: int,
+        per_page: int,
+    ) -> list[Task]:
+        result = await self.session.execute(
+            select(Task)
+            .where(Task.user_id == user_id)
+            .limit(per_page)
+            .offset(page - 1 if page == 1 else (page - 1) * per_page)
+            .order_by(
+                order(Task.created_at),
+            ),
         )
-
-        return list(tasks.scalars().unique())
+        return list(result.scalars().unique())
 
     async def get(self, task_id: int, user_id) -> Task | None:
         return await self.session.scalar(

@@ -1,12 +1,15 @@
 import logging
 from dataclasses import dataclass
 
+from sqlalchemy import asc, desc
+
 from src.apps.projects.models import Project
 from src.apps.projects.repository import ProjectRepository
 from src.apps.tasks.cache_repositories import CacheTasks
 from src.apps.tasks.models import Task
 from src.apps.tasks.repositories import TaskRepository
 from src.apps.tasks.schemas import TaskIn, TaskOut
+from src.core.pagination import Pagination, SortEnum
 from src.exceptions import ProjectNotFoundException, TaskAlreadyExistsException, TaskNotFoundException
 
 logger = logging.getLogger(__name__)
@@ -18,14 +21,20 @@ class TasksService:
     cache_task_repository: CacheTasks
     project_repository: ProjectRepository
 
-    async def get_all(self, *, user_id: int) -> list[TaskOut]:
+    async def get_all(self, *, user_id: int, pagination: Pagination) -> list[TaskOut]:
         # if cache_tasks := await self.cache_task_repository.get_all():  # type: ignore
         #     return cache_tasks
         # tasks: list[Task] = await self.task_repository.get_all()
         # if tasks:
         #     tasks_schema: list[TaskOut] = [TaskOut.model_validate(task) for task in tasks]
         # await self.cache_task_repository.create(tasks_schema)
-        tasks: list[Task] = await self.task_repository.get_all(user_id=user_id)
+        order = desc if pagination.order == SortEnum.DESC else asc
+        tasks: list[Task] = await self.task_repository.get_all(
+            user_id=user_id,
+            order=order,
+            page=pagination.page,
+            per_page=pagination.perPage,
+        )
         return [TaskOut.model_validate(task) for task in tasks]
 
     async def get(self, user_id: int, task_id: int) -> TaskOut:

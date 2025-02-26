@@ -6,7 +6,7 @@ from sqlalchemy import asc, desc
 from src.apps.projects.models import Project
 from src.apps.projects.repository import ProjectRepository
 from src.apps.projects.schemas import ProjectIn, ProjectOut
-from src.core.pagintaion import Pagination, SortEnum
+from src.core.pagination import Pagination, SortEnum
 from src.exceptions import ProjectAlreadyExistsException, ProjectNotFoundException
 
 logger = logging.getLogger(__name__)
