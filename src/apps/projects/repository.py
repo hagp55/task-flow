@@ -13,9 +13,21 @@ logger = logging.getLogger(__name__)
 class ProjectRepository:
     session: AsyncSession
 
-    async def get_all(self, user_id: int) -> list[Project]:
+    async def get_all(
+        self,
+        user_id: int,
+        order,
+        page: int,
+        per_page: int,
+    ) -> list[Project]:
         result = await self.session.execute(
-            select(Project).where(Project.user_id == user_id),
+            select(Project)
+            .where(Project.user_id == user_id)
+            .limit(per_page)
+            .offset(page - 1 if page == 1 else (page - 1) * per_page)
+            .order_by(
+                order(Project.updated_at),
+            ),
         )
         return list(result.scalars().unique())
 

@@ -4,6 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException, Path, Response, status
 
 from src.apps.projects.schemas import ProjectIn, ProjectOut
 from src.apps.projects.services import ProjectService
+from src.core.pagintaion import Pagination, pagination_params
 from src.dependencies import get_project_service, get_request_user_id
 from src.exceptions import ProjectAlreadyExistsException, ProjectNotFoundException
 
@@ -47,13 +48,17 @@ async def create_project(
 async def get_projects(
     user_id: Annotated[int, Depends(get_request_user_id)],
     project_service: Annotated[ProjectService, Depends(get_project_service)],
+    pagination: Annotated[Pagination, Depends(pagination_params)],
 ) -> list[ProjectOut]:
     """
     Get a list of all projects associated with the authenticated user.
 
     Returns a list of project objects with their details.
     """
-    return await project_service.get_all(user_id=user_id)
+    return await project_service.get_all(
+        user_id=user_id,
+        pagination=pagination,
+    )
 
 
 @router.get(

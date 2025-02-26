@@ -1,9 +1,12 @@
 import logging
 from dataclasses import dataclass
 
+from sqlalchemy import asc, desc
+
 from src.apps.projects.models import Project
 from src.apps.projects.repository import ProjectRepository
 from src.apps.projects.schemas import ProjectIn, ProjectOut
+from src.core.pagintaion import Pagination, SortEnum
 from src.exceptions import ProjectAlreadyExistsException, ProjectNotFoundException
 
 logger = logging.getLogger(__name__)
@@ -26,8 +29,14 @@ class ProjectService:
             return ProjectOut.model_validate(project)
         raise ProjectAlreadyExistsException
 
-    async def get_all(self, user_id: int) -> list[ProjectOut]:
-        projects: list[Project] = await self.project_repository.get_all(user_id=user_id)
+    async def get_all(self, user_id: int, pagination: Pagination) -> list[ProjectOut]:
+        order = desc if pagination.order == SortEnum.DESC else asc
+        projects: list[Project] = await self.project_repository.get_all(
+            user_id=user_id,
+            order=order,
+            page=pagination.page,
+            per_page=pagination.perPage,
+        )
         return [ProjectOut.model_validate(project) for project in projects]
 
     async def get(self, *, user_id: int, project_id: int) -> ProjectOut:
