@@ -1,0 +1,57 @@
+name: Checking tests
+run-name: "${{ github.actor }} launched tests on  GitHub Actions 🚀"
+
+on:
+  pull_request:
+    branches:
+      - develop
+
+  workflow_dispatch:
+    inputs:
+      select_tests:
+        description: 'Select the tests to run'
+        type: choice
+        required: true
+        options:
+          - all
+          - unittest
+          - integration
+        default: all
+
+concurrency:
+  group: running-tests
+  cancel-in-progress: true
+
+jobs:
+  run-tests:
+    if: ${{ github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+    - name: Check out the repo
+      uses: actions/checkout@v4
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Setup environment variables to .env
+      run: |
+        echo "POSTGRES_DB=${{ secrets.POSTGRES_DB }}" >> .env
+
+    - name: Build and run services
+      run: docker compose -f docker-compose.ci.yaml up -d --build
+
+    - name: Run all tests
+      if: ${{ github.event_name == 'pull_request' || (github.event_name == 'workflow_dispatch' && inputs.select_tests == 'all') }}
+      run: docker compose -f docker-compose.ci.yaml exec backend pytest
+
+    - name: Run unittest tests
+      if: ${{ github.event_name == 'workflow_dispatch' && inputs.select_tests == 'unittest' }}
+      run: docker compose -f docker-compose.ci.yaml exec backend pytest -m "unittest"
+
+    - name: Run integration tests
+      if: ${{ github.event_name == 'workflow_dispatch' && inputs.select_tests == 'integration' }}
+      run: docker compose -f docker-compose.ci.yaml exec backend pytest -m "integration"
+
+    - name: Shut down Docker Compose
+      run: docker compose -f docker-compose.ci.yaml down
