@@ -2,19 +2,18 @@ import pytest
 from httpx import ASGITransport, AsyncClient
 
 from src.core.db import Base, engine
+from src.core.settings import db
 from tests.db_connector import TestingSessionLocal, app, test_engine
-
-TEST_DB_NAME = "test_task_db"
 
 
 @pytest.fixture(scope="session", autouse=True)
 async def init_database():
     async with engine.begin() as conn:
-        await conn.exec_driver_sql(f"DROP DATABASE IF EXISTS {TEST_DB_NAME} WITH (FORCE)")
-        await conn.exec_driver_sql(f"CREATE DATABASE {TEST_DB_NAME}")
+        await conn.exec_driver_sql(f"DROP DATABASE IF EXISTS TEST_{db.POSTGRES_DB} WITH (FORCE)")
+        await conn.exec_driver_sql(f"CREATE DATABASE TEST_{db.POSTGRES_DB}")
     yield
     async with engine.begin() as conn:
-        await conn.exec_driver_sql(f"DROP DATABASE IF EXISTS {TEST_DB_NAME} WITH (FORCE)")
+        await conn.exec_driver_sql(f"DROP DATABASE IF EXISTS TEST_{db.POSTGRES_DB} WITH (FORCE)")
 
 
 @pytest.fixture(scope="function", autouse=True)
