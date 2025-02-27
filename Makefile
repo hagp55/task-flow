@@ -82,6 +82,10 @@ ruff-check:
 ruff-fix:
 	${DC} exec ${APP_SERVICE} ruff check . --fix
 
+# MANAGEMENT
+generate-dummy-data:
+	${DC} exec ${APP_SERVICE} python3 src/management/dummy_data/generate_data.py
+
 
 # TESTS
 .PHONY: tests
