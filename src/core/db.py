@@ -17,7 +17,6 @@ engine: AsyncEngine = create_async_engine(
     url=db.ASYNC_DNS_DB,
     echo=db.SQL_REQUESTS_SHOW_IN_CONSOLE,
     pool_pre_ping=True,
-    isolation_level="AUTOCOMMIT",
 )
 
 AsyncSessionFactory = async_sessionmaker(

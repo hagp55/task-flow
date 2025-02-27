@@ -1,9 +1,17 @@
 import pytest
 from httpx import ASGITransport, AsyncClient
+from sqlalchemy.ext.asyncio import AsyncEngine, create_async_engine
 
-from src.core.db import Base, engine
+from src.core.db import Base
 from src.core.settings import db
 from tests.db_connector import TestingSessionLocal, app, test_engine
+
+engine: AsyncEngine = create_async_engine(
+    url=db.ASYNC_DNS_DB,
+    echo=db.SQL_REQUESTS_SHOW_IN_CONSOLE,
+    pool_pre_ping=True,
+    isolation_level="AUTOCOMMIT",
+)
 
 
 @pytest.fixture(scope="session", autouse=True)
