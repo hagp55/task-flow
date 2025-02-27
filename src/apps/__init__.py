@@ -1,10 +1,10 @@
 from fastapi import APIRouter
 
-from src.apps.auth.router import router as auth_router
-from src.apps.healthcheck.router import router as healthcheck_router
+from src.apps.auth.routers import router as auth_router
+from src.apps.healthcheck.routers import router as healthcheck_router
 from src.apps.projects.routers import router as project_router
-from src.apps.tasks.router import router as task_router
-from src.apps.users.router import router as user_router
+from src.apps.tasks.routers import router as task_router
+from src.apps.users.routers import router as user_router
 from src.core.settings import settings
 
 v1_router = APIRouter(prefix=settings.API_PREFIX_VERSION)

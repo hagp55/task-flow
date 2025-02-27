@@ -25,12 +25,17 @@ async def create_task(
     user_id: Annotated[int, Depends(get_request_user_id)],
 ) -> TaskOut:
     """
-    Create a new task with the following parameters:
+    Create a new task for the authenticated user with the following parameters:
 
-    - **name**: the name of the task (must be between 2 and 500 characters).
-    - **project_id**: optional project ID to associate the task (if provided, it should be a positive integer).
-    - **priority**: the priority of the task (defaults to `low`). You can choose from `low`, `medium`, or `high`.
-    - **status**: the status of the task (defaults to `pending`). Options include `pending`, `progress`, or `completed`.
+    - **name**: The name of the task (must be between 2 and 500 characters).
+    - **project_id**: Optional project ID to associate the task (if provided, it should be a positive integer).
+    - **priority**: The priority of the task (defaults to `low`). You can choose from `low`, `medium`, or `high`.
+    - **status**: The status of the task (defaults to `pending`). Options include `pending`, `progress`, or `completed`.
+
+    **Responses:**
+    - `201 Created`: Task successfully created.
+    - `400 Bad Request`: Provided project does not exist.
+    - `409 Conflict`: Task with the same name already exists.
     """
     try:
         return await task_service.create(user_id=user_id, payload=payload)
@@ -58,17 +63,21 @@ async def get_tasks(
     pagination: Annotated[Pagination, Depends(pagination_params)],
 ) -> list[TaskOut]:
     """
-    Get a list of all tasks for the authenticated user:
+    Get a list of all tasks for the authenticated user.
 
-    - This endpoint returns all tasks that are assigned to the authenticated user.
-    - The response includes a list of tasks with their attributes such as:
+    - This endpoint returns all tasks assigned to the authenticated user.
+    - The response includes a paginated list of tasks with the following attributes:
         - **name**: The name of the task.
-        - **priority**: The priority level of the task.
-        - **status**: The current status of the task.
+        - **priority**: The priority level of the task (`low`, `medium`, or `high`).
+        - **status**: The current status of the task (`pending`, `progress`, or `completed`).
         - **created_at**: The timestamp of when the task was created.
         - **updated_at**: The timestamp of when the task was last updated.
 
-    If the user has no tasks, an empty list will be returned.
+    - **Pagination**: The response will be paginated based on the provided pagination parameters,
+      allowing users to fetch the projects in chunks.
+
+    **Responses:**
+    - `200 OK`: Returns a list of tasks (empty list if no tasks are found).
     """
     return await task_service.get_all(user_id=user_id, pagination=pagination)
 
@@ -85,17 +94,24 @@ async def get_task(
     user_id: Annotated[int, Depends(get_request_user_id)],
 ) -> TaskOut:
     """
-    Get a specific task by its ID for the authenticated user:
+    Get a specific task by its ID for the authenticated user.
+    - **task_id**: The unique ID of the project to be fetched (must be a positive integer).
 
-    - This endpoint retrieves a single task based on the provided task ID.
-    - The response will include the task attributes such as:
+    **Response**:
+    - Returns the task details, including:
         - **name**: The name of the task.
-        - **priority**: The priority level of the task.
-        - **status**: The current status of the task.
-        - **created_at**: The timestamp of when the task was created.
-        - **updated_at**: The timestamp of when the task was last updated.
+        - **priority**: The priority level of the task (`low`, `medium`, or `high`).
+        - **status**: The current status of the task (`pending`, `progress`, or `completed`).
 
-    If the task does not belong to the authenticated user or does not exist, a 404 error will be returned.
+        - **created_at**: The timestamp when the task was created.
+        - **updated_at**: The timestamp when the task was last updated.
+
+    - If the task does not belong to the authenticated user or does not exist,
+      the endpoint will return a `404 Not Found` error.
+
+    **Responses:**
+    - `200 OK`: Returns the details of the specified task.
+    - `404 Not Found`: Returns an error if the task is not found or does not belong to the authenticated user.
     """
     try:
         return await task_service.get(user_id=user_id, task_id=task_id)
@@ -119,11 +135,27 @@ async def update_task(
     user_id: Annotated[int, Depends(get_request_user_id)],
 ) -> TaskOut:
     """
-    Update an existing task with new details:
+    Update the details of an existing task for the authenticated user.
+    - **task_id**: The unique ID of the project to be fetched (must be a positive integer).
 
-    - **name**: the name of the task.
-    - **priority**: optional new priority level of the task. You can choose from `low`, `medium`, `high`.
-    - **status**: optional new status of the task. You can choose from `pending`, `progress`, or `completed`.
+    - **name**: The name of the task (between 2 and 500 characters).
+    - **project_id**: The ID of the project to be updated (must be a positive integer).
+    - **priority**: Optional new priority level for the task. You can choose from:
+        - `low`: Low priority
+        - `medium`: Medium priority
+        - `high`: High priority
+    - **status**: Optional new status for the task. You can choose from:
+        - `pending`: The task has not started yet.
+        - `progress`: The task is currently being worked on.
+        - `completed`: The task is finished.
+
+    **Responses:**
+    - `200 OK`: Returns the updated task details.
+    - `400 Bad Request`: If the task is not found, the project is not found,
+    or the task already exists with the same data.
+
+    If the task with the given `task_id` does not exist, belongs to a different user, or any other conflict arises,
+    a `400 Bad Request` error will be returned.
     """
     try:
         return await task_service.update(
@@ -150,11 +182,15 @@ async def delete_task(
     user_id: Annotated[int, Depends(get_request_user_id)],
 ) -> None:
     """
-    Delete a task by its ID:
+    Delete a specific task by its ID for the authenticated user.
 
-    - **task_id**: The ID of the task to be deleted. This task must belong to the user.
+    - **task_id**: The ID of the task to be deleted. The task must belong to the authenticated user.
 
-    If the task is not found or does not belong to the user, a 404 error will be raised.
+    **Response**:
+    - `204 No Content`: The task was successfully deleted, and no content is returned.
+
+    **Errors**:
+    - `404 Not Found`: If the task does not exist or does not belong to the authenticated user.
     """
     try:
         await task_service.delete(user_id=user_id, task_id=task_id)
