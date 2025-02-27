@@ -86,16 +86,18 @@ ruff-fix:
 # TESTS
 .PHONY: tests
 tests: # Run all tests
-	${DC} exec ${APP_SERVICE}  pytest tests -vs
+	${DC} exec ${APP_SERVICE}  pytest tests
 
 .PHONY: tests
 tests-integrations: # Run all tests
-	${DC} exec ${APP_SERVICE}  pytest tests -vs -m "integration"
+	${DC} exec ${APP_SERVICE}  pytest tests -m "integration"
 
 .PHONY: tests
 tests-unittest: # Run all tests
-	${DC} exec ${APP_SERVICE}  pytest tests -vs -m "unittest"
+	${DC} exec ${APP_SERVICE}  pytest tests -m "unittest"
 
+tests-coverage:
+	${DC} exec -T ${APP_SERVICE} pytest --cov=. .
 
 # HELP
 help: ## Show this help message

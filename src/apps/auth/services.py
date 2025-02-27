@@ -18,7 +18,6 @@ from src.exceptions import (
     TokenExpiredException,
     TokenHasNotValidSignatureException,
     UserNotCorrectPasswordException,
-    UserNotFoundException,
 )
 
 logger = logging.getLogger(__name__)
@@ -89,7 +88,7 @@ class AuthService:
     @staticmethod
     def _validate_auth_user(user: User, password: str) -> None:
         if not user:
-            raise UserNotFoundException
+            raise UserNotCorrectPasswordException
         if not bcrypt_context.verify(password, user.password):
             raise UserNotCorrectPasswordException
 

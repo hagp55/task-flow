@@ -7,7 +7,7 @@ from fastapi.responses import RedirectResponse
 from src.apps.auth.services import AuthService
 from src.apps.users.schemas import UserLoginIn, UserLoginOut
 from src.dependencies import get_auth_service
-from src.exceptions import UserNotCorrectPasswordException, UserNotFoundException
+from src.exceptions import UserNotCorrectPasswordException
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -25,10 +25,7 @@ async def login_user(
 ) -> UserLoginOut:
     try:
         return await auth_service.login(payload.email, payload.password)
-    except (
-        UserNotFoundException,
-        UserNotCorrectPasswordException,
-    ) as e:
+    except UserNotCorrectPasswordException as e:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail=str(e.detail),

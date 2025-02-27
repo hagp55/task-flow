@@ -6,7 +6,7 @@ from src.core.schemas import InputApiSchema, OutputApiSchema
 
 
 class UserLoginIn(InputApiSchema):
-    email: str = Field(min_length=6, max_length=250, examples=["beazley@example.com"])
+    email: EmailStr = Field(min_length=6, max_length=250, examples=["beazley@example.com"])
     password: str = Field(min_length=6, max_length=250, examples=["Str0ngP@ssw0rd!"])
 
 
@@ -18,8 +18,8 @@ class UserLoginOut(OutputApiSchema):
 class UserSignUpIn(InputApiSchema):
     email: EmailStr = Field(min_length=6, max_length=250, examples=["beazley@example.com"])
     password: str = Field(min_length=6, max_length=250, examples=["Str0ngP@ssw0rd!"])
-    first_name: str | None = Field(min_length=2, max_length=250, examples=[None])
-    last_name: str | None = Field(min_length=2, max_length=255, examples=[None])
+    first_name: str | None = Field(default=None, min_length=2, max_length=250, examples=[None])
+    last_name: str | None = Field(default=None, min_length=2, max_length=255, examples=[None])
 
 
 class ChangeUserPasswordIn(InputApiSchema):

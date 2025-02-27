@@ -34,9 +34,14 @@ async def create_task(
     """
     try:
         return await task_service.create(user_id=user_id, payload=payload)
-    except (ProjectNotFoundException, TaskAlreadyExistsException) as e:
+    except ProjectNotFoundException as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e.detail),
+        )
+    except TaskAlreadyExistsException as e:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
             detail=str(e.detail),
         )
 

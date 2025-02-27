@@ -12,7 +12,7 @@ router = APIRouter()
 
 
 @router.post(
-    "/",
+    "",
     name="Create a new project 📌 ",
     response_model=ProjectOut,
     status_code=status.HTTP_201_CREATED,
@@ -34,13 +34,13 @@ async def create_project(
         return await project_service.create(user_id=user_id, payload=payload)
     except ProjectAlreadyExistsException as e:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
+            status_code=status.HTTP_409_CONFLICT,
             detail=str(e.detail),
         )
 
 
 @router.get(
-    "/",
+    "",
     name="Get projects 📖",
     response_model=list[ProjectOut],
     status_code=status.HTTP_200_OK,
