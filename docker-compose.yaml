@@ -21,7 +21,7 @@ services:
     command: >
       sh -c "
         alembic upgrade head &&
-        poetry run uvicorn src.main:app --host=${APP_HOST} --port=${APP_PORT:-8000} --reload"
+        poetry run uvicorn src.main:app --host=${APP_HOST} --port=${APP_PORT:-8000} --http httptools --reload"
     volumes:
       - .:/app
     env_file:

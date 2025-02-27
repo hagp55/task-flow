@@ -1,7 +1,10 @@
+import asyncio
 import logging
 from contextlib import asynccontextmanager
 
+import uvloop
 from fastapi import FastAPI
+from fastapi.responses import ORJSONResponse
 
 from src.apps import api_router
 from src.apps.auth.admin import init_admin
@@ -39,12 +42,14 @@ def _init_admin(_app: FastAPI) -> None:
 
 
 def create_app() -> FastAPI:
+    asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
     _app: FastAPI = FastAPI(
         debug=settings.DEBUG,
         lifespan=lifespan,
         title=TITLE,
         description=DESCRIPTION,
         version=settings.API_VERSION,
+        default_response_class=ORJSONResponse,
     )
     _init_loggers(_app)
     _init_middlewares(_app)
