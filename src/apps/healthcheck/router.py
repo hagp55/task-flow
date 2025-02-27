@@ -44,6 +44,7 @@ async def get_healthcheck_status_db(
 @router.get(
     "/sentry-debug",
     name="Send error to the sentry 🤒",
+    include_in_schema=False,
 )
 async def trigger_error():
     sentry_sdk.capture_message("This a test error")

@@ -96,6 +96,8 @@ tests-integrations: # Run all tests
 tests-unittest: # Run all tests
 	${DC} exec ${APP_SERVICE}  pytest tests -vs -m "unittest"
 
+tests-coverage:
+	${DC} exec -T ${APP_SERVICE} pytest --cov=. .
 
 # HELP
 help: ## Show this help message
