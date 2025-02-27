@@ -51,7 +51,7 @@ async def get_user_superuser(
         password="strong_password",
     )
     hashed_password: str = bcrypt_context.hash(user.password)
-    updated_payload = user.model_copy(update={"password": hashed_password})
+    updated_payload: UserSignUpIn = user.model_copy(update={"password": hashed_password})
     await session.execute(
         insert(
             User,

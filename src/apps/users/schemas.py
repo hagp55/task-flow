@@ -6,7 +6,7 @@ from src.core.schemas import InputApiSchema, OutputApiSchema
 
 
 class UserLoginIn(InputApiSchema):
-    email: str = Field(min_length=6, max_length=250, examples=["beazley@example.com"])
+    email: EmailStr = Field(min_length=6, max_length=250, examples=["beazley@example.com"])
     password: str = Field(min_length=6, max_length=250, examples=["Str0ngP@ssw0rd!"])
 
 

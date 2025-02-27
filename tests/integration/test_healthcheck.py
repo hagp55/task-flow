@@ -1,7 +1,9 @@
+import pytest
 from fastapi import status
 from httpx import AsyncClient, Response
 
 
+@pytest.mark.integration
 async def test_healthcheck_api_staff__success(
     get_access_token_staff: str,
     async_client: AsyncClient,
@@ -14,6 +16,7 @@ async def test_healthcheck_api_staff__success(
     assert response.json() == {"status": "api is working."}
 
 
+@pytest.mark.integration
 async def test_healthcheck_api_superuser__success(
     get_access_token_superuser: str,
     async_client: AsyncClient,
@@ -26,6 +29,7 @@ async def test_healthcheck_api_superuser__success(
     assert response.json() == {"status": "api is working."}
 
 
+@pytest.mark.integration
 async def test_healthcheck_api_without_permissions__fail(
     get_access_token: str,
     async_client: AsyncClient,
@@ -38,6 +42,7 @@ async def test_healthcheck_api_without_permissions__fail(
     assert response.json() == {"detail": "Permission denied"}
 
 
+@pytest.mark.integration
 async def test_healthcheck_api_unauthorized__fail(
     get_access_token: str,
     async_client: AsyncClient,
@@ -49,6 +54,7 @@ async def test_healthcheck_api_unauthorized__fail(
     assert response.json() == {"detail": "Not authenticated"}
 
 
+@pytest.mark.integration
 async def test_healthcheck_db_staff__success(
     get_access_token_staff: str,
     async_client: AsyncClient,
@@ -61,6 +67,7 @@ async def test_healthcheck_db_staff__success(
     assert response.json() == {"status": "db is working."}
 
 
+@pytest.mark.integration
 async def test_healthcheck_db_superuser__success(
     get_access_token_superuser: str,
     async_client: AsyncClient,
@@ -73,6 +80,7 @@ async def test_healthcheck_db_superuser__success(
     assert response.json() == {"status": "db is working."}
 
 
+@pytest.mark.integration
 async def test_healthcheck_db_without_permissions__fail(
     get_access_token: str,
     async_client: AsyncClient,
@@ -85,6 +93,7 @@ async def test_healthcheck_db_without_permissions__fail(
     assert response.json() == {"detail": "Permission denied"}
 
 
+@pytest.mark.integration
 async def test_healthcheck_db_unauthorized__fail(
     get_access_token: str,
     async_client: AsyncClient,
