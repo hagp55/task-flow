@@ -47,7 +47,7 @@ async def create_projects(*, user_id: int, count_projects: int, session: AsyncSe
     for _ in range(count_projects):
         project = Project(
             user_id=user_id,
-            name=str(fake.company())[:250],
+            name=str(fake.unique.company())[:250],
         )
         session.add(project)
         await session.flush()
@@ -62,7 +62,7 @@ async def create_tasks(*, user_id: int, project_ids: list[int], count_tasks: int
             task = Task(
                 user_id=user_id,
                 project_id=proj,
-                name=str(fake.company())[:250],
+                name=str(fake.unique.company())[:250],
                 priority=fake.random_element(["low", "medium", "high"]),
                 status=fake.random_element(["pending", "progress", "completed"]),
             )
