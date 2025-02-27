@@ -23,12 +23,16 @@ async def create_project(
     project_service: Annotated[ProjectService, Depends(get_project_service)],
 ) -> ProjectOut:
     """
-    Create a new project with the provided information:
+    Create a new project for the authenticated user.
 
-    - **name**: Name of the project (must be between 2 and 250 characters).
-    - **user_id**: User ID who owns the project.
+    - **name**: The name of the project (must be between 2 and 250 characters).
 
-    Returns the newly created project with its details.
+    **Responses:**
+    - `201 Created`: The project was successfully created, and the response will contain the project details.
+    - `409 Conflict`: If a project with the same name already exists for the user.
+
+    This endpoint creates a new project with the specified name and associates it with the authenticated user.
+      If the project already exists, a `409 Conflict` error will be returned.
     """
     try:
         return await project_service.create(user_id=user_id, payload=payload)
@@ -53,7 +57,19 @@ async def get_projects(
     """
     Get a list of all projects associated with the authenticated user.
 
-    Returns a list of project objects with their details.
+    - This endpoint get all projects that belong to the authenticated user.
+    - The response will contain a list of project objects with their details, including:
+        - **id**: The unique ID of the project.
+        - **name**: The name of the project.
+        - **created_at**: The timestamp of when the project was created.
+        - **updated_at**: The timestamp of when the project was last updated.
+        - **tasks**: A list of tasks associated with the project (if any).
+
+    - **Pagination**: The response will be paginated based on the provided pagination parameters,
+      allowing users to fetch the projects in chunks.
+
+    **Responses:**
+    - `200 OK`: A list of projects associated with the authenticated user.
     """
     return await project_service.get_all(
         user_id=user_id,
@@ -73,12 +89,21 @@ async def get_project(
     project_service: Annotated[ProjectService, Depends(get_project_service)],
 ) -> ProjectOut:
     """
-    Get the details of a specific project by its ID.
+    Get the details of a specific project by its ID for the authenticated user.
 
-    - **project_id**: ID of the project to be fetched.
-    - **user_id**: The user ID of the authenticated user.
+    - **project_id**: The unique ID of the project to be fetched (must be a positive integer).
 
-    Returns the details of the specified project.
+    **Response**:
+    - Returns the project details, including:
+        - **id**: The unique ID of the project.
+        - **name**: The name of the project.
+        - **created_at**: The timestamp of when the project was created.
+        - **updated_at**: The timestamp of when the project was last updated.
+        - **tasks**: A list of tasks associated with the project (if any).
+
+    **Errors**:
+    - `404 Not Found`: If the project does not exist or does not belong to the authenticated user.
+
     """
     try:
         return await project_service.get(user_id=user_id, project_id=project_id)
@@ -102,13 +127,23 @@ async def update_project(
     project_service: Annotated[ProjectService, Depends(get_project_service)],
 ) -> ProjectOut:
     """
-    Update the details of an existing project.
+    Update the details of an existing project for the authenticated user.
 
-    - **project_id**: ID of the project to be updated.
-    - **payload**: Data to update the project (name).
-    - **user_id**: The user ID of the authenticated user.
+    - **project_id**: The ID of the project to be updated (must be a positive integer).
+    - **payload**: Data to update the project, including the project name.
 
-    Returns the updated project details.
+    **Response**:
+    - Returns the updated project details, including:
+        - **id**: The unique ID of the project.
+        - **name**: The updated name of the project.
+        - **created_at**: The timestamp of when the project was created.
+        - **updated_at**: The timestamp of when the project was last updated.
+        - **tasks**: A list of tasks associated with the project (if any).
+
+    **Errors**:
+    - `404 Not Found`: If the project does not exist or does not belong to the authenticated user.
+    - `400 Bad Request`: If the project name already exists for the user.
+
     """
     try:
         return await project_service.update(
@@ -140,12 +175,15 @@ async def delete_project(
     project_service: Annotated[ProjectService, Depends(get_project_service)],
 ) -> None:
     """
-    Delete a specific project by its ID.
+    Delete a specific project by its ID for the authenticated user.
 
-    - **project_id**: ID of the project to be deleted.
-    - **user_id**: The user ID of the authenticated user.
+    - **project_id**: The ID of the project to be deleted (must be a positive integer).
 
-    Returns a 204 status code if the project is successfully deleted.
+    **Response**:
+    - `204 No Content`: The project was successfully deleted, and no content is returned.
+
+    **Errors**:
+    - `404 Not Found`: If the project does not exist or does not belong to the authenticated user.
     """
     try:
         await project_service.delete(user_id=user_id, project_id=project_id)
