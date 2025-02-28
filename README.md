@@ -1,4 +1,9 @@
-Welcome to **Task Mania API** – your reliable assistant for task and project management. Keep track of your tasks, stay organized, and never forget important things! ✅
+# **Task Mania API** –
+[![Checking tests](https://github.com/hagp55/task-mania/actions/workflows/test.ci.yaml/badge.svg)](https://github.com/hagp55/task-mania/actions/workflows/test.ci.yaml)
+[![Check by the linter](https://github.com/hagp55/task-mania/actions/workflows/linter.ci.yaml/badge.svg)](https://github.com/hagp55/task-mania/actions/workflows/linter.ci.yaml)
+
+
+## Welcome to **Task Mania API** – your reliable assistant for task and project management. Keep track of your tasks, stay organized, and never forget important things! ✅
 
 ### 🔥 **What Can You Do?**
 
