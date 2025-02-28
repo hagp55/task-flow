@@ -47,7 +47,10 @@ class Settings(BaseSettings):
 
     # BROKER
     EMAIL_SERVICE: bool = False
-    AMQP_BROKER_URL: str = "amqp://guest:guest@localhost:5672//"
+    RABBITMQ_HOST: str = ""
+    RABBITMQ_USER: str = ""
+    RABBITMQ_PASS: str = ""
+    RABBITMQ_PORT: int = 5672
 
     # LOGGING
     SENTRY_URL: str = ""
@@ -61,6 +64,10 @@ class Settings(BaseSettings):
         return (
             f"https://oauth.yandex.ru/authorize?response_type=code&client_id={self.YANDEX_CLIENT_ID}&force_confirm=yes"
         )
+
+    @property
+    def AMQP_BROKER_URL(self) -> str:
+        return f"amqp://{self.RABBITMQ_USER}:{self.RABBITMQ_PASS}@{self.RABBITMQ_HOST}:{self.RABBITMQ_PORT}//"
 
 
 class Cache(BaseSettings):
