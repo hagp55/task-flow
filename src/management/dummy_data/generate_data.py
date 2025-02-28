@@ -73,13 +73,13 @@ async def create_tasks(*, user_id: int, project_ids: list[int], count_tasks: int
 async def main() -> None:
     try:
         count_projects = int(input("How much projects do you want to create? (default=25, maximum 100): "))
-        count_tasks = int(input("How many tasks for each project do you want to create? (default=50, maximum 500): "))
+        count_tasks = int(input("How many tasks for each project do you want to create? (default=50, maximum 1000): "))
     except ValueError:
         count_projects = 25
         count_tasks = 50
         print(f"Your data not correct, will be generate projects: {count_projects}, tasks: {count_tasks}")
     count_projects: int = count_projects if count_projects <= 100 else 100
-    count_tasks: int = count_tasks if count_tasks <= 500 else 500
+    count_tasks: int = count_tasks if count_tasks <= 1000 else 1000
     try:
         async with local_session() as session:
             user_id: int = await create_user(session=session)
