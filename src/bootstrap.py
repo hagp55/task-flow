@@ -12,6 +12,7 @@ from src.core.description import DESCRIPTION, TITLE
 from src.core.loggers import set_logging
 
 # from src.core.services.sentry import sentry_init
+from src.core.services.broker.consumer import make_amqp_consumer
 from src.core.settings import settings
 from src.middlewares.corse_middleware import init_corse_middleware
 
@@ -25,7 +26,8 @@ def _init_loggers(app: FastAPI) -> None:
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # await make_amqp_consumer()
+    if settings.EMAIL_SERVICE:
+        await make_amqp_consumer()
     yield
 
 
