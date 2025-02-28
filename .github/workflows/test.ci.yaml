@@ -1,0 +1,89 @@
+name: Checking tests
+run-name: "${{ github.actor }} launched tests on  GitHub Actions 🚀"
+
+on:
+  pull_request:
+
+  workflow_dispatch:
+    inputs:
+      select_tests:
+        description: 'Select the tests to run'
+        type: choice
+        required: true
+        options:
+          - all
+          - unittest
+          - integration
+        default: all
+
+concurrency:
+  group: running-tests
+  cancel-in-progress: true
+
+jobs:
+  build:
+    if: ${{ github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch' }}
+    timeout-minutes: 10
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: true
+      matrix:
+        os: ["ubuntu-latest"]
+        python-version: ["3.13"]
+
+    ##################################################
+    #         Necessary services
+    ##################################################
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_DB: postgres
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+
+      redis:
+        image: redis:alpine
+        ports:
+         - 6379:6379
+
+
+    steps:
+      ##################################################
+      #       Checkout repo and set-up python
+      ##################################################
+      - name: Clone repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+
+      ##################################################
+      #       Install dependencies
+      ##################################################
+      - name: Install dependencies
+        run: |
+          pip3 install poetry
+          poetry config virtualenvs.create false
+          poetry install --no-root --no-interaction --no-ansi
+
+
+      ##################################################
+      #             Testing
+      ##################################################
+      - name: Run all tests
+        if: ${{ github.event_name == 'pull_request' || (github.event_name == 'workflow_dispatch' && inputs.select_tests == 'all') }}
+        run: poetry run pytest tests
+
+      - name: Run unittest tests
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.select_tests == 'unittest' }}
+        run: poetry run pytest -m "unittest"
+
+      - name: Run integration tests
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.select_tests == 'integration' }}
+        run: poetry run pytest -m "integration"

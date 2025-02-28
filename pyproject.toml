@@ -1,9 +1,10 @@
 [tool.poetry]
-name = "pomodoro-poetry"
+name = "task-mania"
 version = "0.1.0"
 description = ""
 authors = ["Aleksandr Smelik <suntrope55@gmail.com>"]
 readme = "README.md"
+package-mode = false
 
 [tool.poetry.dependencies]
 python = "^3.13"
@@ -13,10 +14,8 @@ pydantic-settings = "^2.7.1"
 pyyaml = "^6.0.2"
 sqlalchemy = "^2.0.38"
 alembic = "^1.14.1"
-psycopg2-binary = "^2.9.10"
 redis = "^5.2.1"
 python-jose = {extras = ["crypography"], version = "^3.3.0"}
-requests = "^2.32.3"
 asyncpg = "^0.30.0"
 greenlet = "^3.1.1"
 httpx = "^0.28.1"
@@ -31,6 +30,9 @@ cryptography = "^44.0.1"
 bcrypt = "^4.2.1"
 sqladmin = "^0.20.1"
 itsdangerous = "^2.2.0"
+orjson = "^3.10.15"
+uvloop = "^0.21.0"
+httptools = "^0.6.4"
 
 
 [tool.poetry.group.linter.dependencies]
@@ -52,7 +54,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.ruff]
 target-version = "py313"
-line-length = 110
+line-length = 120
 extend-exclude = [
     "migrations",
     "__pycache__",
@@ -65,6 +67,8 @@ extend-exclude = [
 quote-style = "double"
 indent-style = "space"
 line-ending = "auto"
+
+
 
 [tool.ruff.lint]
 select = [
@@ -96,8 +100,10 @@ pythonpath = [
   ".", "src",
 ]
 asyncio_mode="auto"
+asyncio_default_fixture_loop_scope = "session"
 markers = [
-
+    "unittest: marks tests as unittest tests (deselect with '-m \"not unittest\"')",
+    "integration: marks tests as integration tests (deselect with '-m \"not integration\"')",
 ]
 
 [tool.coverage.run]

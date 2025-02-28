@@ -77,17 +77,31 @@ alembic-migration-downgrade-base: ## downgrade all migrations
 
 # LINTERS
 ruff-check:
-	poetry run ruff check .
+	${DC} exec ${APP_SERVICE} ruff check .
 
 ruff-fix:
-	poetry run ruff check . --fix
+	${DC} exec ${APP_SERVICE} ruff check . --fix
+
+# MANAGEMENT
+generate-dummy-data:
+	${DC} exec ${APP_SERVICE} python3 src/management/dummy_data/generate_data.py
 
 
 # TESTS
 .PHONY: tests
 tests: # Run all tests
-	pytest tests -vs
+	${DC} exec ${APP_SERVICE}  pytest tests
 
+.PHONY: tests
+tests-integrations: # Run all tests
+	${DC} exec ${APP_SERVICE}  pytest tests -m "integration"
+
+.PHONY: tests
+tests-unittest: # Run all tests
+	${DC} exec ${APP_SERVICE}  pytest tests -m "unittest"
+
+tests-coverage:
+	${DC} exec -T ${APP_SERVICE} pytest --cov=. .
 
 # HELP
 help: ## Show this help message

@@ -19,8 +19,8 @@ class Settings(BaseSettings):
     BASE_DIR: Path = Path(__file__).parents[2]
     DEBUG: bool = False
     APP_PORT: int = 8000
-    APP_HOST: str = "localhost"
-    SECRET_KEY: str
+    APP_HOST: str = "0.0.0.0"
+    SECRET_KEY: str = "your_secret_key"
     ENVIRONMENT: Literal["dev", "prod", "tests"] = "dev"
     ALLOW_ORIGINS_URLS: list["str"] = []
     API_VERSION: str = "0.0.1"
@@ -40,9 +40,9 @@ class Settings(BaseSettings):
     GOOGLE_REDIRECT_URI: str = ""
     GOOGLE_TOKEN_URL: str = "https://accounts.google.com/o/oauth2/token"
 
-    YANDEX_CLIENT_ID: str
-    YANDEX_CLIENT_SECRET: str
-    YANDEX_REDIRECT_URI: str
+    YANDEX_CLIENT_ID: str = ""
+    YANDEX_CLIENT_SECRET: str = ""
+    YANDEX_REDIRECT_URI: str = ""
     YANDEX_TOKEN_URL: str = "https://oauth.yandex.ru/token"
 
     # BROKER
@@ -50,7 +50,7 @@ class Settings(BaseSettings):
     AMQP_BROKER_URL: str = "amqp://guest:guest@localhost:5672//"
 
     # LOGGING
-    SENTRY_URL: str
+    SENTRY_URL: str = ""
 
     @property
     def GOOGLE_REDIRECT_URL(self) -> str:
@@ -58,7 +58,9 @@ class Settings(BaseSettings):
 
     @property
     def YANDEX_REDIRECT_URL(self) -> str:
-        return f"https://oauth.yandex.ru/authorize?response_type=code&client_id={self.YANDEX_CLIENT_ID}&force_confirm=yes"
+        return (
+            f"https://oauth.yandex.ru/authorize?response_type=code&client_id={self.YANDEX_CLIENT_ID}&force_confirm=yes"
+        )
 
 
 class Cache(BaseSettings):
@@ -71,11 +73,11 @@ class Cache(BaseSettings):
 class DB(BaseSettings):
     model_config = config
 
-    POSTGRES_HOST: str
-    POSTGRES_PORT: int
-    POSTGRES_DB: str
-    POSTGRES_USER: str
-    POSTGRES_PASSWORD: str
+    POSTGRES_HOST: str = "localhost"
+    POSTGRES_PORT: int = 5432
+    POSTGRES_DB: str = "postgres"
+    POSTGRES_USER: str = "postgres"
+    POSTGRES_PASSWORD: str = "postgres"
     SQL_REQUESTS_SHOW_IN_CONSOLE: bool = False
 
     SYNC_PROVIDER: str = "postgresql+psycopg2"

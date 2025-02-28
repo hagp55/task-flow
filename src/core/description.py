@@ -1,18 +1,18 @@
-TITLE = "TaskNest"
+TITLE = "Task Mania"
 
 DESCRIPTION = """
-## 🚀 **TaskNest API** – Manage Your Tasks and Projects with Easy!
+## 🚀 **Task Mania API** – Manage Your Tasks and Projects with Easy!
 
-Welcome to **TaskNest API** – your reliable assistant for task and project management.
+Welcome to **Task Mania API** – your reliable assistant for task and project management.
 Keep track of your tasks, stay organized, and never forget important things! ✅
 
 ### 🔥 **What Can You Do?**
 
-#### 🏗 **Projects**
-- 📌 **Create projects** – structure your tasks efficiently.
-- 📖 **View projects** – stay informed at all times.
-- ✏ **Update projects** – make changes effortlessly.
-- 🗑 **Delete projects** – remove unnecessary ones.
+#### 🏗 **Project Management**
+- 📌 **Create & organize projects** – keep your work structured.
+- 📖 **View all projects** – get a clear overview.
+- ✏ **Update project details** – modify anytime.
+- 🗑 **Delete unnecessary projects** – keep your workspace clean.
 
 #### ✅ **Tasks**
 - 📝 **Create tasks** – keep track of important to-dos.
@@ -20,9 +20,18 @@ Keep track of your tasks, stay organized, and never forget important things! ✅
 - ✏ **Update tasks** – modify as needed.
 - 🗑 **Delete tasks** – clear up your task list.
 
-#### 👤 **Users**
+
+#### ✅ **Task Management**
+- 📝 **Create tasks** – keep track of important to-dos.
+- 📖 **View tasks** – monitor your progress.
+- ✏ **Edit tasks** – update as needed.
+- 🗑 **Delete completed tasks** – clear up your task list.
+
+#### 👤 **User Management**
+
 - 🔹 **Register users** – create accounts easily.
-- 🔍 **View user information** – get the necessary details.
+- ✏️ **Change password** – change password accounts easily.
+- 🔍 **View user information** – get personal info.
 
 #### 🔐 **Authorization**
 - 🔑 **Login with email and password** – the classic way.
@@ -32,9 +41,11 @@ Keep track of your tasks, stay organized, and never forget important things! ✅
 ---
 
 ### 🔮 **What’s Coming Next?**
-✨ **Additional login options:**
+✨ **Not implemented**
 - 📱 **Sign in with phone number.**
 - 💬 **Sign in with Telegram.**
+
+- ⏳ **Set due dates for tasks** – schedule and manage deadlines effectively.
 
 📌 *Stay tuned for updates! More exciting features are on the way!* 🚀
 """

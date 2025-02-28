@@ -14,23 +14,35 @@ concurrency:
 jobs:
   run-linter:
     if: ${{ github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch' }}
-    runs-on: ubuntu-latest
-    timeout-minutes: 3
+    timeout-minutes: 1
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: true
+      matrix:
+        os: ["ubuntu-latest"]
+        python-version: ["3.13"]
 
     steps:
+      ########################################
+      #   Checkout repo and set-up python    #
+      ########################################
       - name: Check out the repo
         uses: actions/checkout@v4
 
-      - name: Setup Python 3.13
+      - name: Setup Python ${{ matrix.python-version }}
         uses: actions/setup-python@v5
         with:
-          python-version: '3.13'
+          python-version: ${{ matrix.python-version }}
+          cache: pip
 
+      ########################################
+      #   Install dependencies               #
+      ########################################
       - name: Install dependencies
-        run: |
-          pip3 install poetry
-          poetry config virtualenvs.create false
-          poetry add ruff
+        run: pip3 install --prefer-binary ruff
 
+      ########################################
+      # Run linter                           #
+      ########################################
       - name: Run linter
-        run: poetry run ruff check .
+        run: ruff check .

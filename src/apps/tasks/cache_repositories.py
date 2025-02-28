@@ -4,7 +4,7 @@ from src.apps.tasks.schemas import TaskOut
 
 
 class CacheTasks:
-    def __init__(self, redis: Redis) -> None:
+    def __init__(self, *, redis: Redis) -> None:
         self.redis: Redis = redis
 
     async def get_all(self) -> list[TaskOut]:
