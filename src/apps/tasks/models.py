@@ -1,8 +1,11 @@
+import uuid
+from datetime import datetime
 from typing import TYPE_CHECKING
 
-from sqlalchemy import ForeignKey, UniqueConstraint
+from sqlalchemy import ForeignKey, UniqueConstraint, text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
+from src.apps.tasks.enums import Priority, Status
 from src.core.db import Base, str_500
 from src.core.models import TimestampMixin
 
@@ -11,17 +14,23 @@ if TYPE_CHECKING:
 
 
 class Task(TimestampMixin, Base):
-    id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str_500]
-    priority: Mapped[str]
-    status: Mapped[str]
-    user_id: Mapped[int] = mapped_column(
+    priority: Mapped[Priority] = mapped_column(
+        default=Priority.low,
+        server_default=text("'low'"),
+    )
+    status: Mapped[Status] = mapped_column(
+        default=Status.pending,
+        server_default=text("'pending'"),
+    )
+    deadline: Mapped[datetime | None]
+    user_id: Mapped[uuid.UUID] = mapped_column(
         ForeignKey(
             "users.id",
             ondelete="CASCADE",
         )
     )
-    project_id: Mapped[int | None] = mapped_column(
+    project_id: Mapped[uuid.UUID | None] = mapped_column(
         ForeignKey(
             "projects.id",
             ondelete="CASCADE",

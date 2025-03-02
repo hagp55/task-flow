@@ -1,3 +1,4 @@
+import uuid
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, Path, Response, status
@@ -19,7 +20,7 @@ router = APIRouter()
 )
 async def create_project(
     payload: ProjectIn,
-    user_id: Annotated[int, Depends(get_request_user_id)],
+    user_id: Annotated[uuid.UUID, Depends(get_request_user_id)],
     project_service: Annotated[ProjectService, Depends(get_project_service)],
 ) -> ProjectOut:
     """
@@ -50,7 +51,7 @@ async def create_project(
     status_code=status.HTTP_200_OK,
 )
 async def get_projects(
-    user_id: Annotated[int, Depends(get_request_user_id)],
+    user_id: Annotated[uuid.UUID, Depends(get_request_user_id)],
     project_service: Annotated[ProjectService, Depends(get_project_service)],
     pagination: Annotated[Pagination, Depends(pagination_params)],
 ) -> list[ProjectOut]:
@@ -84,8 +85,8 @@ async def get_projects(
     status_code=status.HTTP_200_OK,
 )
 async def get_project(
-    project_id: Annotated[int, Path(ge=1)],
-    user_id: Annotated[int, Depends(get_request_user_id)],
+    project_id: Annotated[uuid.UUID, Path()],
+    user_id: Annotated[uuid.UUID, Depends(get_request_user_id)],
     project_service: Annotated[ProjectService, Depends(get_project_service)],
 ) -> ProjectOut:
     """
@@ -121,9 +122,9 @@ async def get_project(
     status_code=status.HTTP_200_OK,
 )
 async def update_project(
-    project_id: Annotated[int, Path(ge=1)],
+    project_id: Annotated[uuid.UUID, Path()],
     payload: ProjectIn,
-    user_id: Annotated[int, Depends(get_request_user_id)],
+    user_id: Annotated[uuid.UUID, Depends(get_request_user_id)],
     project_service: Annotated[ProjectService, Depends(get_project_service)],
 ) -> ProjectOut:
     """
@@ -170,8 +171,8 @@ async def update_project(
     status_code=status.HTTP_204_NO_CONTENT,
 )
 async def delete_project(
-    project_id: Annotated[int, Path(ge=1)],
-    user_id: Annotated[int, Depends(get_request_user_id)],
+    project_id: Annotated[uuid.UUID, Path()],
+    user_id: Annotated[uuid.UUID, Depends(get_request_user_id)],
     project_service: Annotated[ProjectService, Depends(get_project_service)],
 ) -> None:
     """

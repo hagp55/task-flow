@@ -1,3 +1,4 @@
+import uuid
 from typing import Any
 
 from sqladmin import ModelView
@@ -27,7 +28,7 @@ class TaskAdmin(ModelView, model=Task):
         if is_created:
             token: Any | None = request.session.get("token")
             if token:
-                user_id: int = AuthService.get_user_id_from_access_token(
+                user_id: uuid.UUID = AuthService.get_user_id_from_access_token(
                     access_token=token,
                 )
                 data["user_id"] = user_id

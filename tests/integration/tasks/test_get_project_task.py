@@ -19,7 +19,7 @@ async def test_get_project_tasks__success(
     input_data = [
         {
             "name": task.name,
-            "projectId": task.project_id,
+            "projectId": str(task.project_id),
             "priority": task.priority,
             "status": task.status,
         }

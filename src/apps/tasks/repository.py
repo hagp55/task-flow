@@ -1,4 +1,5 @@
 import logging
+import uuid
 from dataclasses import dataclass
 
 from sqlalchemy import delete, insert, select, update
@@ -13,7 +14,7 @@ logger: logging.Logger = logging.getLogger(__name__)
 class TaskRepository:
     session: AsyncSession
 
-    async def create(self, *, user_id: int, payload: dict) -> Task | None:
+    async def create(self, *, user_id: uuid.UUID, payload: dict) -> Task | None:
         task: Task | None = (
             await self.session.execute(
                 insert(
@@ -28,7 +29,7 @@ class TaskRepository:
 
     async def get_all(
         self,
-        user_id: int,
+        user_id: uuid.UUID,
         order,
         page: int,
         per_page: int,
@@ -44,35 +45,35 @@ class TaskRepository:
         )
         return list(result.scalars().unique())
 
-    async def get(self, task_id: int, user_id) -> Task | None:
+    async def get(self, task_id: uuid.UUID, user_id: uuid.UUID) -> Task | None:
         return await self.session.scalar(
             select(
                 Task,
             ).where(Task.id == task_id, Task.user_id == user_id),
         )
 
-    async def get_by_name(self, *, user_id: int, name: str) -> Task | None:
+    async def get_by_name(self, *, user_id: uuid.UUID, name: str) -> Task | None:
         return await self.session.scalar(
             select(
                 Task,
             ).where(Task.user_id == user_id, Task.name == name),
         )
 
-    async def update(self, *, user_id: int, task_id: int, payload: dict) -> Task | None:
-        updated_task: Task | None = (
+    async def update(self, *, task_id: uuid.UUID, payload: dict) -> Task | None:
+        task: Task | None = (
             await self.session.execute(
-                update(
-                    Task,
+                update(Task)
+                .where(
+                    Task.id == task_id,
                 )
-                .where(Task.id == task_id, Task.user_id == user_id)
                 .values(**payload)
                 .returning(Task)
             )
         ).scalar()
         await self.session.commit()
-        return updated_task
+        return task
 
-    async def delete(self, *, user_id: int, task_id: int) -> None:
+    async def delete(self, *, user_id: uuid.UUID, task_id: uuid.UUID) -> None:
         await self.session.execute(
             delete(
                 Task,

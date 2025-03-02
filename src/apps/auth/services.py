@@ -1,4 +1,5 @@
 import logging
+import uuid
 from dataclasses import dataclass
 from datetime import UTC, datetime, timedelta
 from typing import Any
@@ -93,10 +94,10 @@ class AuthService:
             raise UserNotCorrectPasswordException
 
     @staticmethod
-    def generate_access_token(user_id: int) -> str:
+    def generate_access_token(user_id: uuid.UUID) -> str:
         expires_date: datetime = datetime.now(UTC) + timedelta(hours=settings.JWT_UPDATE_TIME)
         payload: dict[str, Any] = {
-            "id": user_id,
+            "id": str(user_id),
             "expire": int(expires_date.timestamp()),
         }
         return jwt.encode(
@@ -106,7 +107,7 @@ class AuthService:
         )
 
     @staticmethod
-    def get_user_id_from_access_token(*, access_token: str) -> int:
+    def get_user_id_from_access_token(*, access_token: str) -> uuid.UUID:
         try:
             payload: dict[str, Any] = jwt.decode(
                 access_token,

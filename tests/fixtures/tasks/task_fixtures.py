@@ -80,7 +80,6 @@ async def get_project_tasks(
         response: Response = await async_client.post(
             "/api/v1/tasks",
             headers={"Authorization": f"Bearer {get_access_token}"},
-            json=task.model_dump(),
+            json=task.model_dump(mode="json"),
         )
-        print("saved")
     return tasks
