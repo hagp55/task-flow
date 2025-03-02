@@ -24,8 +24,10 @@ class Status(str, Enum):
         progress (str): The task is in progress.
         pending (str): The task is pending.
         completed (str): The task is completed.
+        expired (str): The task is expired.
     """
 
     pending = "pending"
     progress = "progress"
     completed = "completed"
+    expired = "expired"
