@@ -3,13 +3,12 @@ from datetime import datetime
 from sqlalchemy import func
 from sqlalchemy.orm import Mapped, mapped_column
 
-from src.core.db import Base, boolean_false, boolean_true, str_250_or_none, uniq_str_250_or_none
+from src.core.db import Base, boolean_false, boolean_true, str_250_or_none, uniq_str_250
 
 
 class User(Base):
-    id: Mapped[int] = mapped_column(primary_key=True)
+    email: Mapped[uniq_str_250]
     password: Mapped[str_250_or_none]
-    email: Mapped[uniq_str_250_or_none]
     first_name: Mapped[str_250_or_none]
     last_name: Mapped[str_250_or_none]
     date_joined: Mapped[datetime | None] = mapped_column(

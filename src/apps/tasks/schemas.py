@@ -1,3 +1,4 @@
+import uuid
 from datetime import datetime
 
 from pydantic import Field
@@ -12,7 +13,7 @@ class TaskIn(schemas.InputApiSchema):
         max_length=500,
         examples=["Spend 10 minutes meditating to clear the mind."],
     )
-    project_id: int | None = Field(default=None, ge=1, examples=[None])
+    project_id: uuid.UUID | None = Field(default=None, examples=[None])
     priority: Priority | None = Field(
         default=Priority.low,
         examples=["low", "medium", "high"],
@@ -25,9 +26,9 @@ class TaskIn(schemas.InputApiSchema):
 
 
 class TaskOut(schemas.OutputApiSchema):
-    id: int
+    id: uuid.UUID
     name: str
-    project_id: int | None
+    project_id: uuid.UUID | None
     priority: Priority | None = Priority.low
     status: Status | None = Status.pending
     created_at: datetime

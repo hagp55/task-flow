@@ -1,3 +1,4 @@
+import uuid
 from typing import Any
 
 import pytest
@@ -39,7 +40,7 @@ async def test_create_project_task__success(
         json=payload,
     )
     assert response.status_code == status.HTTP_201_CREATED
-    assert response.json()["id"] == get_project["id"]
+    assert response.json()["projectId"] == get_project["id"]
     assert TaskOut.model_validate(response.json())
 
 
@@ -48,9 +49,9 @@ async def test_create_project_task_not_exists_project__fail(
     get_access_token: str,
     async_client: AsyncClient,
 ) -> None:
-    data: dict[str, str | None | int] = {
+    data: dict[str, str | None | uuid.UUID] = {
         "name": "Spend 10 minutes meditating to clear the mind.",
-        "projectId": 1,
+        "projectId": str(uuid.uuid4()),
         "priority": "low",
         "status": "pending",
     }

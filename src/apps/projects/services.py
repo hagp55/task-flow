@@ -1,4 +1,5 @@
 import logging
+import uuid
 from dataclasses import dataclass
 
 from sqlalchemy import asc, desc
@@ -16,7 +17,7 @@ logger = logging.getLogger(__name__)
 class ProjectService:
     project_repository: ProjectRepository
 
-    async def create(self, *, user_id: int, payload: ProjectIn) -> ProjectOut:
+    async def create(self, *, user_id: uuid.UUID, payload: ProjectIn) -> ProjectOut:
         exists_project: Project | None = await self.project_repository.get_by_name(
             user_id=user_id,
             name=payload.name,
@@ -29,7 +30,7 @@ class ProjectService:
             return ProjectOut.model_validate(project)
         raise ProjectAlreadyExistsException
 
-    async def get_all(self, user_id: int, pagination: Pagination) -> list[ProjectOut]:
+    async def get_all(self, user_id: uuid.UUID, pagination: Pagination) -> list[ProjectOut]:
         order = desc if pagination.order == SortEnum.DESC else asc
         projects: list[Project] = await self.project_repository.get_all(
             user_id=user_id,
@@ -39,7 +40,7 @@ class ProjectService:
         )
         return [ProjectOut.model_validate(project) for project in projects]
 
-    async def get(self, *, user_id: int, project_id: int) -> ProjectOut:
+    async def get(self, *, user_id: uuid.UUID, project_id: uuid.UUID) -> ProjectOut:
         project: Project | None = await self.project_repository.get(
             user_id=user_id,
             project_id=project_id,
@@ -48,7 +49,7 @@ class ProjectService:
             raise ProjectNotFoundException
         return ProjectOut.model_validate(project)
 
-    async def update(self, *, user_id: int, project_id: int, payload: ProjectIn) -> ProjectOut:
+    async def update(self, *, user_id: uuid.UUID, project_id: uuid.UUID, payload: ProjectIn) -> ProjectOut:
         project: Project | None = await self.project_repository.get(
             user_id=user_id,
             project_id=project_id,
@@ -67,7 +68,7 @@ class ProjectService:
             raise ProjectAlreadyExistsException
         raise ProjectNotFoundException
 
-    async def delete(self, *, user_id: int, project_id: int) -> None:
+    async def delete(self, *, user_id: uuid.UUID, project_id: uuid.UUID) -> None:
         project: Project | None = await self.project_repository.get(
             user_id=user_id,
             project_id=project_id,

@@ -1,3 +1,4 @@
+import uuid
 from datetime import datetime
 
 from pydantic import Field
@@ -11,7 +12,7 @@ class ProjectIn(InputApiSchema):
 
 
 class ProjectOut(OutputApiSchema):
-    id: int
+    id: uuid.UUID
     name: str = Field(min_length=2, max_length=250, examples=["TaskMania"])
     created_at: datetime
     updated_at: datetime

@@ -1,3 +1,4 @@
+import uuid
 from datetime import datetime
 
 from pydantic import EmailStr, Field
@@ -11,7 +12,7 @@ class UserLoginIn(InputApiSchema):
 
 
 class UserLoginOut(OutputApiSchema):
-    id: int
+    id: uuid.UUID
     access_token: str
 
 
@@ -29,6 +30,7 @@ class ChangeUserPasswordIn(InputApiSchema):
 
 
 class UserMeOut(OutputApiSchema):
+    id: uuid.UUID
     first_name: str | None = Field(min_length=2, max_length=250, examples=["David"])
     last_name: str | None = Field(min_length=2, max_length=255, examples=["Beazley"])
     email: EmailStr = Field(min_length=6, max_length=250, examples=["beazley@example.com"])

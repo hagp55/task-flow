@@ -1,3 +1,5 @@
+import uuid
+
 import pytest
 from fastapi import status
 from httpx import AsyncClient, Response
@@ -10,7 +12,7 @@ async def test_delete_projects__success(
     async_client: AsyncClient,
 ) -> None:
     response: Response = await async_client.delete(
-        "/api/v1/projects/1",
+        f"/api/v1/projects/{get_project['id']}",
         headers={"Authorization": f"Bearer {get_access_token}"},
     )
 
@@ -23,7 +25,7 @@ async def test_delete_not_exists_projects__success(
     async_client: AsyncClient,
 ) -> None:
     response: Response = await async_client.delete(
-        "/api/v1/projects/1",
+        f"/api/v1/projects/{uuid.uuid4()}",
         headers={"Authorization": f"Bearer {get_access_token}"},
     )
 
@@ -34,9 +36,10 @@ async def test_delete_not_exists_projects__success(
 @pytest.mark.integration
 async def test_delete_projects_not_authorized__success(
     async_client: AsyncClient,
+    get_project: dict,
 ) -> None:
     response: Response = await async_client.delete(
-        "/api/v1/projects/1",
+        f"/api/v1/projects/{uuid.uuid4()}",
     )
 
     assert response.status_code == status.HTTP_403_FORBIDDEN

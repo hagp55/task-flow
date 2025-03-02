@@ -1,3 +1,4 @@
+import uuid
 from typing import TYPE_CHECKING
 
 from sqlalchemy import ForeignKey, UniqueConstraint
@@ -11,17 +12,16 @@ if TYPE_CHECKING:
 
 
 class Task(TimestampMixin, Base):
-    id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str_500]
     priority: Mapped[str]
     status: Mapped[str]
-    user_id: Mapped[int] = mapped_column(
+    user_id: Mapped[uuid.UUID] = mapped_column(
         ForeignKey(
             "users.id",
             ondelete="CASCADE",
         )
     )
-    project_id: Mapped[int | None] = mapped_column(
+    project_id: Mapped[uuid.UUID | None] = mapped_column(
         ForeignKey(
             "projects.id",
             ondelete="CASCADE",

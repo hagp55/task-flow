@@ -1,3 +1,5 @@
+import uuid
+
 import pytest
 from fastapi import status
 from httpx import AsyncClient, Response
@@ -13,7 +15,7 @@ async def test_update_task__success(
 ) -> None:
     new_payload: dict[str, str] = {
         "name": f"{get_project_task['name']} v1.0",
-        "project_id": get_project_task["id"],
+        "project_id": get_project_task["projectId"],
         "priority": "medium",
         "status": "completed",
     }
@@ -22,7 +24,6 @@ async def test_update_task__success(
         headers={"Authorization": f"Bearer {get_access_token}"},
         json=new_payload,
     )
-
     assert response.status_code == status.HTTP_200_OK
     assert response.json()["name"] == new_payload["name"]
     assert response.json()["priority"] == new_payload["priority"]
@@ -37,11 +38,11 @@ async def test_update_not_task_not_exists_project__fail(
     async_client: AsyncClient,
 ) -> None:
     response: Response = await async_client.put(
-        "/api/v1/tasks/1",
+        f"/api/v1/tasks/{uuid.uuid4()}",
         headers={"Authorization": f"Bearer {get_access_token}"},
         json={
             "name": "TaskMania",
-            "project_id": 1,
+            "project_id": str(uuid.uuid4()),
             "priority": "medium",
             "status": "completed",
         },

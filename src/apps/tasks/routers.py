@@ -1,4 +1,5 @@
 import logging
+import uuid
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, Response, status
@@ -22,7 +23,7 @@ logger = logging.getLogger(__name__)
 async def create_task(
     payload: TaskIn,
     task_service: Annotated[TasksService, Depends(get_tasks_service)],
-    user_id: Annotated[int, Depends(get_request_user_id)],
+    user_id: Annotated[uuid.UUID, Depends(get_request_user_id)],
 ) -> TaskOut:
     """
     Create a new task for the authenticated user with the following parameters:
@@ -59,7 +60,7 @@ async def create_task(
 )
 async def get_tasks(
     task_service: Annotated[TasksService, Depends(get_tasks_service)],
-    user_id: Annotated[int, Depends(get_request_user_id)],
+    user_id: Annotated[uuid.UUID, Depends(get_request_user_id)],
     pagination: Annotated[Pagination, Depends(pagination_params)],
 ) -> list[TaskOut]:
     """
@@ -89,9 +90,9 @@ async def get_tasks(
     status_code=status.HTTP_200_OK,
 )
 async def get_task(
-    task_id: int,
+    task_id: uuid.UUID,
     task_service: Annotated[TasksService, Depends(get_tasks_service)],
-    user_id: Annotated[int, Depends(get_request_user_id)],
+    user_id: Annotated[uuid.UUID, Depends(get_request_user_id)],
 ) -> TaskOut:
     """
     Get a specific task by its ID for the authenticated user.
@@ -129,10 +130,10 @@ async def get_task(
     status_code=status.HTTP_200_OK,
 )
 async def update_task(
-    task_id: int,
+    task_id: uuid.UUID,
     payload: TaskIn,
     task_service: Annotated[TasksService, Depends(get_tasks_service)],
-    user_id: Annotated[int, Depends(get_request_user_id)],
+    user_id: Annotated[uuid.UUID, Depends(get_request_user_id)],
 ) -> TaskOut:
     """
     Update the details of an existing task for the authenticated user.
@@ -177,9 +178,9 @@ async def update_task(
     status_code=status.HTTP_204_NO_CONTENT,
 )
 async def delete_task(
-    task_id: int,
+    task_id: uuid.UUID,
     task_service: Annotated[TasksService, Depends(get_tasks_service)],
-    user_id: Annotated[int, Depends(get_request_user_id)],
+    user_id: Annotated[uuid.UUID, Depends(get_request_user_id)],
 ) -> None:
     """
     Delete a specific task by its ID for the authenticated user.
