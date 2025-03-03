@@ -5,6 +5,7 @@ export $(shell sed 's/=.*//' .env)
 
 APP_SERVICE = api
 DB_SERVICE = db
+PROXY_SERVICE = nginx
 
 DC = docker compose
 EXEC = docker exec -it
@@ -30,6 +31,12 @@ restart-api: ## Restart only api
 restart-db: ## Restart only api
 	${DC} restart ${DB_SERVICE}
 
+restart-proxy: ## Restart only proxy server
+	${DC} restart ${PROXY_SERVICE}
+
+proxy-reload: ## Restart only proxy server
+	${DC} exec ${PROXY_SERVICE} nginx -s reload
+
 down: ## Down all services
 	docker compose down
 
@@ -53,6 +60,12 @@ db-psql: ## Go to the psql
 
 db-destroy: ## Delete volume database
 	docker volume rm pomodoro-time_pg_data
+
+proxy-shell: ## Go to the api shell
+	${DC} exec ${PROXY_SERVICE} /bin/sh
+
+proxy-logs:
+	${DC} logs --follow ${PROXY_SERVICE}
 
 
 # ALEMBIC MIGRATIONS
