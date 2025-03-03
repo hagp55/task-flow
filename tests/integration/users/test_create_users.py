@@ -8,9 +8,9 @@ from src.apps.users.schemas import UserLoginOut
 @pytest.mark.parametrize(
     "email,password,first_name,last_name",
     [
-        ("valid@domain.com", "password", None, None),
-        ("valid@domain.com", "password", "John", None),
-        ("valid@domain.com", "password", "John", "Doe"),
+        ("valid@domain.com", "strongPassword12d!", None, None),
+        ("valid@domain.com", "strongPassword12d", "John", None),
+        ("valid@domain.com", "strongPassword12d", "John", "Doe"),
     ],
 )
 @pytest.mark.integration
@@ -30,6 +30,7 @@ async def test_create_user__success(
             "last_name": last_name,
         },
     )
+
     assert response.status_code == status.HTTP_201_CREATED
     assert UserLoginOut.model_validate(response.json())
 
@@ -37,7 +38,7 @@ async def test_create_user__success(
 @pytest.mark.parametrize(
     "email,password",
     [
-        ("valid@domain.com", "password"),
+        ("valid@domain.com", "strongPassword12d"),
     ],
 )
 @pytest.mark.integration
@@ -101,6 +102,41 @@ async def test_create_exists_user__fail(async_client: AsyncClient) -> None:
 )
 @pytest.mark.integration
 async def test_create_user_no_valid_payload__fail(
+    email: str,
+    password: str,
+    first_name: str | None,
+    last_name: str | None,
+    async_client: AsyncClient,
+) -> None:
+    response: Response = await async_client.post(
+        "/api/v1/users/signup",
+        json={
+            "email": email,
+            "password": password,
+            "first_name": first_name,
+            "last_name": last_name,
+        },
+    )
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+
+
+@pytest.mark.parametrize(
+    "email,password,first_name,last_name",
+    [
+        ("valid@domain.com", "1323455463445243", None, None),
+        ("valid@domain.com", "valid45", None, None),
+        ("valid@domain.com", "111222tianya", None, None),
+        ("valid@domain.com", "421uiopy258", None, None),
+        ("valid@domain.com", "password123", "valid", None),
+        ("valid@domain.com", "PE#5GZ29PTZMSE", None, "valid"),
+        ("valid@domain.com", "1323455463445243", None, "valid"),
+        ("valid@domain.com", "valid45", None, None),
+        ("valid@domain.com", "computer1", None, "valid"),
+        ("valid@domain.com", "qwerty12345", None, "valid"),
+    ],
+)
+@pytest.mark.integration
+async def test_create_user_no_valid_password__fail(
     email: str,
     password: str,
     first_name: str | None,

@@ -103,6 +103,9 @@ tests-unittest: # Run all tests
 tests-coverage:
 	${DC} exec -T ${APP_SERVICE} pytest --cov=. .
 
+tests-coverage-html:
+	pytest --cov-report html:cov_html --cov=src tests/
+
 # HELP
 help: ## Show this help message
 	@echo "Usage: make [command]"
