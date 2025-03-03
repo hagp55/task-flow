@@ -9,7 +9,7 @@
         {% if error %}
         <input name="email" type="email" class="form-control is-invalid" placeholder="Enter email"
           autocomplete="off">
-        <div class="invalid-feedback">{{ error }}</div>
+        <div class="invalid-feedback">check your email and password</div>
         {% else %}
         <input name="email" type="email" class="form-control" placeholder="Enter email" autocomplete="off">
         {% endif %}
@@ -22,7 +22,7 @@
           {% if error %}
           <input name="password" type="password" class="form-control is-invalid" placeholder="Password"
             autocomplete="off">
-          <div class="invalid-feedback">{{ error }}</div>
+          <div class="invalid-feedback">check your email and password</div>
           {% else %}
           <input name="password" type="password" class="form-control" placeholder="Password" autocomplete="off">
           {% endif %}

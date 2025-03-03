@@ -1,7 +1,7 @@
 import uuid
 from datetime import datetime
 
-from pydantic import Field
+from pydantic import Field, field_validator
 
 from src.apps.tasks.enums import Priority, Status
 from src.core import schemas
@@ -23,6 +23,12 @@ class TaskIn(schemas.InputApiSchema):
         default=Status.pending,
         examples=["pending", "progress", "completed"],
     )
+
+    @field_validator("status", mode="before")
+    def validate_status(cls, value) -> str:
+        if value == Status.expired:
+            raise ValueError("Status 'expired' is not allowed.")
+        return value  # WRITE TESTS
 
 
 class TaskOut(schemas.OutputApiSchema):

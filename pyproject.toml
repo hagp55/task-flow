@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "task-mania"
+name = "task-flow"
 version = "0.1.0"
 description = ""
 authors = ["Aleksandr Smelik <suntrope55@gmail.com>"]
