@@ -1,3 +1,4 @@
+import uuid
 from typing import Any
 
 import pytest
@@ -37,7 +38,7 @@ async def test_update_not_exists_task__fail(
     async_client: AsyncClient,
 ) -> None:
     response: Response = await async_client.put(
-        "/api/v1/tasks/1",
+        f"/api/v1/tasks/{uuid.uuid4()}",
         headers={"Authorization": f"Bearer {get_access_token}"},
         json={
             "name": "TaskMania",
@@ -54,7 +55,7 @@ async def test_update_task_not_authorized__fail(
     async_client: AsyncClient,
 ) -> None:
     response: Response = await async_client.put(
-        "/api/v1/tasks/1",
+        f"/api/v1/tasks/{uuid.uuid4()}",
         json={
             "name": "TaskMania",
             "priority": "medium",

@@ -1,3 +1,5 @@
+import uuid
+
 import pytest
 from fastapi import status
 from httpx import AsyncClient, Response
@@ -29,7 +31,7 @@ async def test_update_not_exists_project__fail(
     async_client: AsyncClient,
 ) -> None:
     response: Response = await async_client.put(
-        "/api/v1/projects/1",
+        f"/api/v1/projects/{uuid.uuid4()}",
         headers={"Authorization": f"Bearer {get_access_token}"},
         json={"name": "TaskMania"},
     )
@@ -43,7 +45,7 @@ async def test_update_project_not_authorized__fail(
     async_client: AsyncClient,
 ) -> None:
     response: Response = await async_client.put(
-        "/api/v1/projects/1",
+        f"/api/v1/projects/{uuid.uuid4()}",
         json={"name": "TaskMania"},
     )
 

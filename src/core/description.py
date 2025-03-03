@@ -1,9 +1,9 @@
-TITLE = "Task Mania"
+TITLE = "Task Flow"
 
 DESCRIPTION = """
-## 🚀 **Task Mania API** – Manage Your Tasks and Projects with Easy!
+## 🚀 **Task Flow API** – Manage Your Tasks and Projects with Easy!
 
-Welcome to **Task Mania API** – your reliable assistant for task and project management.
+Welcome to **Task Flow API** – your reliable assistant for task and project management.
 Keep track of your tasks, stay organized, and never forget important things! ✅
 
 ### 🔥 **What Can You Do?**

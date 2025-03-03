@@ -1,4 +1,5 @@
 import logging
+import uuid
 from dataclasses import dataclass
 
 from sqlalchemy import delete, insert, select, update
@@ -15,7 +16,7 @@ class ProjectRepository:
 
     async def get_all(
         self,
-        user_id: int,
+        user_id: uuid.UUID,
         order,
         page: int,
         per_page: int,
@@ -31,7 +32,7 @@ class ProjectRepository:
         )
         return list(result.scalars().unique())
 
-    async def get(self, *, user_id: int, project_id: int) -> Project | None:
+    async def get(self, *, user_id: uuid.UUID, project_id: uuid.UUID) -> Project | None:
         return await self.session.scalar(
             select(Project).where(
                 Project.id == project_id,
@@ -39,7 +40,7 @@ class ProjectRepository:
             )
         )
 
-    async def get_by_name(self, *, user_id: int, name: str) -> Project | None:
+    async def get_by_name(self, *, user_id: uuid.UUID, name: str) -> Project | None:
         return await self.session.scalar(
             select(Project).where(
                 Project.name == name,
@@ -47,7 +48,7 @@ class ProjectRepository:
             )
         )
 
-    async def create(self, *, user_id: int, payload: dict) -> Project | None:
+    async def create(self, *, user_id: uuid.UUID, payload: dict) -> Project | None:
         project: Project | None = (
             await self.session.execute(
                 insert(Project)
@@ -61,7 +62,7 @@ class ProjectRepository:
         await self.session.commit()
         return project
 
-    async def update(self, *, project_id: int, payload: dict) -> Project | None:
+    async def update(self, *, project_id: uuid.UUID, payload: dict) -> Project | None:
         project: Project | None = (
             await self.session.execute(
                 update(Project)
@@ -75,6 +76,6 @@ class ProjectRepository:
         await self.session.commit()
         return project
 
-    async def delete(self, *, project_id: int) -> None:
+    async def delete(self, *, project_id: uuid.UUID) -> None:
         await self.session.execute(delete(Project).where(Project.id == project_id))
         await self.session.commit()

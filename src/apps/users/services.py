@@ -37,6 +37,8 @@ class UsersService:
         if user:
             self.auth_service._validate_auth_user(user, payload.old_password)
             new_hashed_password: str = bcrypt_context.hash(payload.new_password)
+            if user.password == new_hashed_password:
+                return
             await self.users_repository.change_password(
                 user_id=user.id,
                 password=new_hashed_password,

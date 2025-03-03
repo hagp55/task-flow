@@ -1,4 +1,5 @@
 import logging
+import uuid
 from typing import Annotated
 
 from fastapi import Depends, HTTPException, Security, security
@@ -9,7 +10,7 @@ from src.apps.auth.services import AuthService
 from src.apps.projects.repository import ProjectRepository
 from src.apps.projects.services import ProjectService
 from src.apps.tasks.cache_repositories import CacheTasks
-from src.apps.tasks.repositories import TaskRepository
+from src.apps.tasks.repository import TaskRepository
 from src.apps.tasks.services import TasksService
 from src.apps.users.models import User
 from src.apps.users.repositories import UsersRepository
@@ -111,9 +112,9 @@ def get_users_service(
 async def get_request_user_id(
     auth_service: Annotated[AuthService, Depends(get_auth_service)],
     token: security.http.HTTPAuthorizationCredentials = Security(reusable_oauth2),
-) -> int:
+) -> uuid.UUID:
     try:
-        user_id: int = auth_service.get_user_id_from_access_token(access_token=token.credentials)
+        user_id: uuid.UUID = auth_service.get_user_id_from_access_token(access_token=token.credentials)
     except (TokenExpiredException, TokenHasNotValidSignatureException) as e:
         raise HTTPException(
             status_code=401,
@@ -126,9 +127,9 @@ async def get_request_staff_or_superuser_user_id(
     auth_service: Annotated[AuthService, Depends(get_auth_service)],
     users_repository: Annotated[UsersRepository, Depends(get_users_repository)],
     token: security.http.HTTPAuthorizationCredentials = Security(reusable_oauth2),
-) -> int:
+) -> uuid.UUID:
     try:
-        user_id: int = auth_service.get_user_id_from_access_token(access_token=token.credentials)
+        user_id: uuid.UUID = auth_service.get_user_id_from_access_token(access_token=token.credentials)
     except (TokenExpiredException, TokenHasNotValidSignatureException) as e:
         raise HTTPException(
             status_code=401,

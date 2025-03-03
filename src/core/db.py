@@ -1,14 +1,14 @@
 import uuid
 from typing import Annotated
 
-from sqlalchemy import Boolean, MetaData, String
+from sqlalchemy import UUID, Boolean, MetaData, String, func
 from sqlalchemy.ext.asyncio import (
     AsyncAttrs,
     AsyncEngine,
     async_sessionmaker,
     create_async_engine,
 )
-from sqlalchemy.orm import DeclarativeBase, declared_attr, mapped_column
+from sqlalchemy.orm import DeclarativeBase, Mapped, declared_attr, mapped_column
 
 from src.core.settings import db
 from src.core.utils.db import camel_to_snake, singular_to_plural
@@ -27,37 +27,15 @@ AsyncSessionFactory = async_sessionmaker(
     autoflush=False,
 )
 
-POSTGRES_INDEXES_NAMING_CONVENTION = {
-    "ix": "%(column_0_label)s_idx",
-    "uq": "%(table_name)s_%(column_0_name)s_key",
-    "ck": "%(table_name)s_%(constraint_name)s_check",
-    "fk": "%(table_name)s_%(column_0_name)s_fkey",
-    "pk": "%(table_name)s_pkey",
-}
-
-
-metadata = MetaData(naming_convention=POSTGRES_INDEXES_NAMING_CONVENTION)
-
-
-class Base(AsyncAttrs, DeclarativeBase):
-    metadata = metadata
-
-    @declared_attr  # type: ignore
-    def __tablename__(cls) -> str:
-        return singular_to_plural(
-            camel_to_snake(
-                cls.__name__,
-            ),
-        )
-
-
-async def get_async_session():
-    async with AsyncSessionFactory() as session:
-        yield session
-
-
 # Types for SQLALCHEMY
-uuid_id = Annotated[str, mapped_column(primary_key=True, default=str(uuid.uuid4()))]
+uuid_id = Annotated[
+    uuid.UUID,
+    mapped_column(
+        UUID(as_uuid=True),
+        primary_key=True,
+        server_default=func.gen_random_uuid(),
+    ),
+]
 
 str_100 = Annotated[str, mapped_column(String(length=100))]
 str_150 = Annotated[str, mapped_column(String(length=150))]
@@ -86,3 +64,31 @@ uniq_str_500_or_none = Annotated[str | None, mapped_column(String(length=100), u
 
 boolean_true = Annotated[bool, mapped_column(Boolean, default=True)]
 boolean_false = Annotated[bool, mapped_column(Boolean, default=False)]
+
+
+POSTGRES_INDEXES_NAMING_CONVENTION = {
+    "ix": "%(column_0_label)s_idx",
+    "uq": "%(table_name)s_%(column_0_name)s_key",
+    "ck": "%(table_name)s_%(constraint_name)s_check",
+    "fk": "%(table_name)s_%(column_0_name)s_fkey",
+    "pk": "%(table_name)s_pkey",
+}
+metadata = MetaData(naming_convention=POSTGRES_INDEXES_NAMING_CONVENTION)
+
+
+class Base(AsyncAttrs, DeclarativeBase):
+    metadata = metadata
+    id: Mapped[uuid_id]
+
+    @declared_attr  # type: ignore
+    def __tablename__(cls) -> str:
+        return singular_to_plural(
+            camel_to_snake(
+                cls.__name__,
+            ),
+        )
+
+
+async def get_async_session():
+    async with AsyncSessionFactory() as session:
+        yield session

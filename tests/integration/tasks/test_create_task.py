@@ -125,6 +125,7 @@ async def test_create_task_not_authorized__fail(
         (None, "low", "pending"),
         ("task", "pending!", "pending"),
         ("task", "low", "!pending!"),
+        ("task", "low", "expired"),
     ],
 )
 @pytest.mark.integration

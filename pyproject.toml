@@ -56,7 +56,6 @@ build-backend = "poetry.core.masonry.api"
 target-version = "py313"
 line-length = 120
 extend-exclude = [
-    "migrations",
     "__pycache__",
     ".git/",
     "env/",
