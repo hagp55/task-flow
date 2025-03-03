@@ -30,7 +30,7 @@ class ProjectService:
             return ProjectOut.model_validate(project)
         raise ProjectAlreadyExistsException
 
-    async def get_all(self, user_id: uuid.UUID, pagination: Pagination) -> list[ProjectOut]:
+    async def get_all(self, *, user_id: uuid.UUID, pagination: Pagination) -> list[ProjectOut]:
         order = desc if pagination.order == SortEnum.DESC else asc
         projects: list[Project] = await self.project_repository.get_all(
             user_id=user_id,
@@ -55,17 +55,13 @@ class ProjectService:
             project_id=project_id,
         )
         if project:
-            exists_project: Project | None = await self.project_repository.get_by_name(
-                user_id=user_id,
-                name=payload.name,
+            if project.name == payload.name:
+                return ProjectOut.model_validate(project)
+            updated_project: Project | None = await self.project_repository.update(
+                project_id=project.id,
+                payload=payload.model_dump(exclude_unset=True),
             )
-            if not exists_project:
-                updated_project: Project | None = await self.project_repository.update(
-                    project_id=project.id,
-                    payload=payload.model_dump(),
-                )
-                return ProjectOut.model_validate(updated_project)
-            raise ProjectAlreadyExistsException
+            return ProjectOut.model_validate(updated_project)
         raise ProjectNotFoundException
 
     async def delete(self, *, user_id: uuid.UUID, project_id: uuid.UUID) -> None:

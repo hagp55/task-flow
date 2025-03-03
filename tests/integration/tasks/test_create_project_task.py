@@ -39,6 +39,7 @@ async def test_create_project_task__success(
         headers={"Authorization": f"Bearer {get_access_token}"},
         json=payload,
     )
+
     assert response.status_code == status.HTTP_201_CREATED
     assert response.json()["projectId"] == get_project["id"]
     assert TaskOut.model_validate(response.json())
@@ -60,5 +61,6 @@ async def test_create_project_task_not_exists_project__fail(
         headers={"Authorization": f"Bearer {get_access_token}"},
         json=data,
     )
+
     assert response.status_code == status.HTTP_400_BAD_REQUEST
     assert response.json() == {"detail": "Project not found"}

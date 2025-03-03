@@ -28,8 +28,9 @@ async def create_task(
     """
     Create a new task for the authenticated user with the following parameters:
 
+    **Request**:
     - **name**: The name of the task (must be between 2 and 500 characters).
-    - **project_id**: Optional project ID to associate the task (if provided, it should be a positive integer).
+    - **project_id**: Optional project ID to associate the task (if provided, it must be a uuid).
     - **priority**: The priority of the task (defaults to `low`). You can choose from `low`, `medium`, or `high`.
     - **status**: The status of the task (defaults to `pending`). Options include `pending`, `progress`, or `completed`.
 
@@ -96,7 +97,10 @@ async def get_task(
 ) -> TaskOut:
     """
     Get a specific task by its ID for the authenticated user.
-    - **task_id**: The unique ID of the project to be fetched (must be a positive integer).
+
+    **Request**:
+    - **task_id**: The unique ID of the task to be fetched (must be a uuid).
+
 
     **Response**:
     - Returns the task details, including:
@@ -137,10 +141,14 @@ async def update_task(
 ) -> TaskOut:
     """
     Update the details of an existing task for the authenticated user.
-    - **task_id**: The unique ID of the project to be fetched (must be a positive integer).
+
+    **Request**:
+    - **task_id**: The ID of the task to be updated (must be a uuid).
+
+
 
     - **name**: The name of the task (between 2 and 500 characters).
-    - **project_id**: The ID of the project to be updated (must be a positive integer).
+    - **project_id**: The ID of the project to be updated (must be a uuid).
     - **priority**: Optional new priority level for the task. You can choose from:
         - `low`: Low priority
         - `medium`: Medium priority
@@ -185,7 +193,8 @@ async def delete_task(
     """
     Delete a specific task by its ID for the authenticated user.
 
-    - **task_id**: The ID of the task to be deleted. The task must belong to the authenticated user.
+    **Request**:
+    - **task_id**: The ID of the task to be deleted (must be a uuid).
 
     **Response**:
     - `204 No Content`: The task was successfully deleted, and no content is returned.

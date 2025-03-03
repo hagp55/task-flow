@@ -26,6 +26,7 @@ async def create_project(
     """
     Create a new project for the authenticated user.
 
+    **Request**:
     - **name**: The name of the project (must be between 2 and 250 characters).
 
     **Responses:**
@@ -92,7 +93,8 @@ async def get_project(
     """
     Get the details of a specific project by its ID for the authenticated user.
 
-    - **project_id**: The unique ID of the project to be fetched (must be a positive integer).
+    **Request**:
+    - **project_id**: The unique ID of the project to be fetched (must be a uuid).
 
     **Response**:
     - Returns the project details, including:
@@ -130,12 +132,13 @@ async def update_project(
     """
     Update the details of an existing project for the authenticated user.
 
-    - **project_id**: The ID of the project to be updated (must be a positive integer).
+    **Request**:
+    - **project_id**: The ID of the project to be updated (must be a uuid).
     - **payload**: Data to update the project, including the project name.
 
     **Response**:
     - Returns the updated project details, including:
-        - **id**: The unique ID of the project.
+        - **id**: The unique ID of the project (must be a uuid).
         - **name**: The updated name of the project.
         - **created_at**: The timestamp of when the project was created.
         - **updated_at**: The timestamp of when the project was last updated.
@@ -143,8 +146,6 @@ async def update_project(
 
     **Errors**:
     - `404 Not Found`: If the project does not exist or does not belong to the authenticated user.
-    - `400 Bad Request`: If the project name already exists for the user.
-
     """
     try:
         return await project_service.update(
@@ -155,11 +156,6 @@ async def update_project(
     except ProjectNotFoundException as e:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=str(e.detail),
-        )
-    except ProjectAlreadyExistsException as e:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
             detail=str(e.detail),
         )
 
@@ -178,7 +174,8 @@ async def delete_project(
     """
     Delete a specific project by its ID for the authenticated user.
 
-    - **project_id**: The ID of the project to be deleted (must be a positive integer).
+    **Request**:
+    - **project_id**: The ID of the project to be deleted (must be a uuid).
 
     **Response**:
     - `204 No Content`: The project was successfully deleted, and no content is returned.

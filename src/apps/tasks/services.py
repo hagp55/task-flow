@@ -23,12 +23,6 @@ class TasksService:
     project_repository: ProjectRepository
 
     async def get_all(self, *, user_id: uuid.UUID, pagination: Pagination) -> list[TaskOut]:
-        # if cache_tasks := await self.cache_task_repository.get_all():  # type: ignore
-        #     return cache_tasks
-        # tasks: list[Task] = await self.task_repository.get_all()
-        # if tasks:
-        #     tasks_schema: list[TaskOut] = [TaskOut.model_validate(task) for task in tasks]
-        # await self.cache_task_repository.create(tasks_schema)
         order = desc if pagination.order == SortEnum.DESC else asc
         tasks: list[Task] = await self.task_repository.get_all(
             user_id=user_id,
@@ -43,9 +37,9 @@ class TasksService:
             task_id=task_id,
             user_id=user_id,
         )
-        if not task:
-            raise TaskNotFoundException
-        return TaskOut.model_validate(task)
+        if task:
+            return TaskOut.model_validate(task)
+        raise TaskNotFoundException
 
     async def create(self, *, user_id: uuid.UUID, payload: TaskIn) -> TaskOut:
         if payload.project_id:
@@ -64,11 +58,10 @@ class TasksService:
                 user_id=user_id,
                 payload=payload.model_dump(),
             )
-            # await self.cache_task_repository.delete()
             return TaskOut.model_validate(task)
         raise TaskAlreadyExistsException
 
-    async def update(self, *, user_id: uuid.UUID, task_id, payload: TaskIn) -> TaskOut:
+    async def update(self, *, user_id: uuid.UUID, task_id: uuid.UUID, payload: TaskIn) -> TaskOut:
         if payload.project_id:
             exists_project: Project | None = await self.project_repository.get(
                 user_id=user_id,
@@ -80,22 +73,24 @@ class TasksService:
             task_id=task_id,
             user_id=user_id,
         )
-        if not task:
-            raise TaskNotFoundException
-        task = await self.task_repository.update(
-            task_id=task_id,
-            payload=payload.model_dump(),
-        )
-        return TaskOut.model_validate(task)
+        if task:
+            if (
+                payload.name == task.name
+                and payload.priority == task.priority
+                and payload.status == task.status
+                and (payload.project_id == task.project_id or (payload.project_id is None and task.project_id is None))
+            ):
+                return TaskOut.model_validate(task)
+            updated_task = await self.task_repository.update(
+                task_id=task_id,
+                payload=payload.model_dump(exclude_unset=True),
+            )
+            return TaskOut.model_validate(updated_task)
+        raise TaskNotFoundException
 
     async def delete(self, *, user_id: uuid.UUID, task_id: uuid.UUID) -> None:
-        task: Task | None = await self.task_repository.get(
-            task_id=task_id,
-            user_id=user_id,
-        )
-        if not task:
-            raise TaskNotFoundException
-        await self.task_repository.delete(
-            user_id=user_id,
-            task_id=task_id,
-        )
+        task: Task | None = await self.task_repository.get(task_id=task_id, user_id=user_id)
+        if task:
+            await self.task_repository.delete(user_id=user_id, task_id=task_id)
+            return
+        raise TaskNotFoundException
