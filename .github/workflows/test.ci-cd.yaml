@@ -5,25 +5,12 @@ on:
   pull_request:
     branches: [ "main" ]
 
-  workflow_dispatch:
-    inputs:
-      select_tests:
-        description: 'Select the tests to run'
-        type: choice
-        required: true
-        options:
-          - all
-          - unittest
-          - integration
-        default: all
-
 concurrency:
   group: running-tests
   cancel-in-progress: true
 
 jobs:
-  run-linter:
-    if: ${{ github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch' }}
+  linter:
     timeout-minutes: 1
     runs-on: ${{ matrix.os }}
     strategy:
@@ -58,9 +45,9 @@ jobs:
         run: ruff check .
 
   testing:
-    if: ${{ github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch' }}
     timeout-minutes: 10
     runs-on: ${{ matrix.os }}
+    needs: linter
     strategy:
       fail-fast: true
       matrix:
@@ -112,13 +99,32 @@ jobs:
       #             Testing
       ##################################################
       - name: Run all tests
-        if: ${{ github.event_name == 'pull_request' || (github.event_name == 'workflow_dispatch' && inputs.select_tests == 'all') }}
         run: poetry run pytest tests
 
-      - name: Run unittest tests
-        if: ${{ github.event_name == 'workflow_dispatch' && inputs.select_tests == 'unittest' }}
-        run: poetry run pytest -m "unittest"
+  deploy:
+    runs-on: ubuntu-latest
+    needs: testing
 
-      - name: Run integration tests
-        if: ${{ github.event_name == 'workflow_dispatch' && inputs.select_tests == 'integration' }}
-        run: poetry run pytest -m "integration"
+    steps:
+      ########################################
+      #   Checkout repo and set up SSH
+      ########################################
+      - name: Clone repository
+        uses: actions/checkout@v4
+
+      - name: Set up SSH
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      ########################################
+      #   Deploy
+      ########################################
+      - name: Deploy to server via SSH
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_IP }} -p ${{ secrets.SSH_PORT }} << 'EOF'
+          cd ~/task-flow-project/task-flow &&
+          git pull origin main &&
+          docker compose -f docker-compose.prod.yaml down &&
+          docker compose -f docker-compose.prod.yaml up --build -d
+          EOF
