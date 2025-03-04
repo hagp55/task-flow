@@ -122,3 +122,23 @@ jobs:
       - name: Run integration tests
         if: ${{ github.event_name == 'workflow_dispatch' && inputs.select_tests == 'integration' }}
         run: poetry run pytest -m "integration"
+
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v4
+
+      - name: Set up SSH
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Deploy to server via SSH
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@1${{ secrets.SSH_IP }} -p ${{ secrets.SSH_PORT }}
+          "cd ~/task-flow-project/task-flow &&
+          git pull &&
+          docker compose -f docker-compose.prod.yaml down &&
+          docker compose -f docker-compose.prod.yaml up --build -d"
