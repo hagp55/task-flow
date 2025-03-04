@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 @router.post(
     "/login",
     response_model=UserLoginOut,
-    name="User login 🤝",
+    name="User login",
     status_code=status.HTTP_200_OK,
 )
 async def login_user(
@@ -48,7 +48,7 @@ async def login_user(
 @router.get(
     "/login/google",
     response_class=RedirectResponse,
-    name="For signup 🤗 Go to link in description ✨🚀",
+    name="For signup Go to link in description",
     # description="Go to the link in any browser <b>http://localhost:8000/api/v1/auth/login/google</b>",
 )
 async def login_user_with_google(
@@ -69,7 +69,7 @@ async def login_user_with_google(
 
 @router.get(
     "/google",
-    name="Google authorization 🤗",
+    name="Google authorization",
 )
 async def google_auth(
     auth_service: Annotated[AuthService, Depends(get_auth_service)],
@@ -93,7 +93,7 @@ async def google_auth(
 @router.get(
     "/login/yandex",
     response_class=RedirectResponse,
-    name="For signup 🤗 Go to link in description ✨🚀",
+    name="For signup Go to link in description",
     # description="Go to the link in any browser <b>http://localhost:8000/api/v1/auth/login/yandex</b>",
 )
 async def login_user_with_yandex(
@@ -116,7 +116,7 @@ async def login_user_with_yandex(
 
 @router.get(
     "/yandex",
-    name="Yandex authorization 🤗",
+    name="Yandex authorization",
 )
 async def yandex_auth(
     auth_service: Annotated[AuthService, Depends(get_auth_service)],

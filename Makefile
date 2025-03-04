@@ -5,6 +5,7 @@ export $(shell sed 's/=.*//' .env)
 
 APP_SERVICE = api
 DB_SERVICE = db
+PROXY_SERVICE = nginx
 
 DC = docker compose
 EXEC = docker exec -it
@@ -24,23 +25,23 @@ full-build: ## Rebuild all services and refresh cache
 restart: ## Restart all services
 	${DC} restart
 
-restart-api: ## Restart only api
-	${DC} restart ${APP_SERVICE}
-
-restart-db: ## Restart only api
-	${DC} restart ${DB_SERVICE}
-
 down: ## Down all services
 	docker compose down
 
 logs: ## Show logs all services
 	${DC} logs --follow
 
+api-restart: ## Restart only api
+	${DC} restart ${APP_SERVICE}
+
 api-logs: ## Show logs only api
 	${DC} logs --follow ${APP_SERVICE}
 
 api-shell: ## Go to the api shell
 	${DC} exec ${APP_SERVICE} /bin/bash
+
+db-restart: ## Restart only api
+	${DC} restart ${DB_SERVICE}
 
 db-logs: ## Show logs only database
 	${DC} logs --follow ${DB_SERVICE}
@@ -53,6 +54,25 @@ db-psql: ## Go to the psql
 
 db-destroy: ## Delete volume database
 	docker volume rm pomodoro-time_pg_data
+
+proxy-restart: ## Restart only proxy server
+	${DC} restart ${PROXY_SERVICE}
+
+proxy-reload: ## Restart only proxy server
+	${DC} exec ${PROXY_SERVICE} nginx -s reload
+
+proxy-shell: ## Go to the api shell
+	${DC} exec ${PROXY_SERVICE} /bin/sh
+
+proxy-logs:
+	${DC} logs --follow ${PROXY_SERVICE}
+
+# Prod
+prod-up: ## Build and run all services
+	${DC} -f docker-compose.prod.yaml up --build -d
+
+prod-down: ## Build and run all services
+	${DC} -f docker-compose.prod.yaml up down
 
 
 # ALEMBIC MIGRATIONS

@@ -14,7 +14,7 @@ router = APIRouter(dependencies=[Depends(get_request_staff_or_superuser_user_id)
 
 @router.get(
     "",
-    name="Get app status 🌡️",
+    name="Get app status",
     response_model=HealthCheckResponseSchema,
 )
 async def get_healthcheck_status() -> HealthCheckResponseSchema:
@@ -31,7 +31,7 @@ async def get_healthcheck_status() -> HealthCheckResponseSchema:
 
 @router.get(
     "/db",
-    name="Get database status 💊",
+    name="Get database status",
     response_model=HealthCheckDBResponseSchema,
 )
 async def get_healthcheck_status_db(

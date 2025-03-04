@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 
 @router.post(
     "",
-    name="Create a new task 📝",
+    name="Create a new task",
     response_model=TaskOut,
     status_code=status.HTTP_201_CREATED,
 )
@@ -55,7 +55,7 @@ async def create_task(
 
 @router.get(
     "",
-    name="Get tasks 📖",
+    name="Get tasks",
     response_model=list[TaskOut],
     status_code=status.HTTP_200_OK,
 )
@@ -86,7 +86,7 @@ async def get_tasks(
 
 @router.get(
     "/{task_id}",
-    name="Get a specific task by its ID 📖",
+    name="Get a specific task by its ID",
     response_model=TaskOut,
     status_code=status.HTTP_200_OK,
 )
@@ -129,7 +129,7 @@ async def get_task(
 
 @router.put(
     "/{task_id}",
-    name="Update a task with the provided data ✏",
+    name="Update a task with the provided data",
     response_model=TaskOut,
     status_code=status.HTTP_200_OK,
 )
@@ -181,7 +181,7 @@ async def update_task(
 
 @router.delete(
     "/{task_id}",
-    name="Delete task 🗑️",
+    name="Delete task",
     response_class=Response,
     status_code=status.HTTP_204_NO_CONTENT,
 )

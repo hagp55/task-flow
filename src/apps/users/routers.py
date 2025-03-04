@@ -16,7 +16,7 @@ router = APIRouter()
 @router.post(
     "/signup",
     response_model=UserLoginOut,
-    summary="Registering a new user 🙌",
+    summary="Registering a new user",
     status_code=status.HTTP_201_CREATED,
 )
 async def create_user(
@@ -48,7 +48,7 @@ async def create_user(
 
 @router.put(
     "/change_password",
-    name="Change password by user ✏️",
+    name="Change password by user",
     status_code=status.HTTP_200_OK,
 )
 async def user_change_password(
@@ -81,7 +81,7 @@ async def user_change_password(
 @router.get(
     "/me",
     response_model=UserMeOut,
-    name="Get info about me 🧐",
+    name="Get info about me",
     status_code=status.HTTP_200_OK,
 )
 async def me(

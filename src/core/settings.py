@@ -20,7 +20,6 @@ class Settings(BaseSettings):
     DEBUG: bool = False
     APP_PORT: int = 8000
     APP_HOST: str = "0.0.0.0"
-    SECRET_KEY: str = "your_secret_key"
     ENVIRONMENT: Literal["dev", "prod", "tests"] = "dev"
     ALLOW_ORIGINS_URLS: list["str"] = []
     API_VERSION: str = "0.0.1"
