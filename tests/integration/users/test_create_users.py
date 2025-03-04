@@ -80,6 +80,7 @@ async def test_create_exists_user__fail(async_client: AsyncClient) -> None:
         },
     )
     assert response.status_code == status.HTTP_409_CONFLICT
+    assert response.json() == {"detail": "User already exists"}
 
 
 @pytest.mark.parametrize(

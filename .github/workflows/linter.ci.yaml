@@ -2,9 +2,10 @@ name: Check by the linter
 run-name: "${{ github.actor }} launched linter on  GitHub Actions 🚀"
 
 on:
-  workflow_dispatch:
-
   pull_request:
+    branches: [ "develop" ]
+
+  workflow_dispatch:
 
 concurrency:
   group: check-linters

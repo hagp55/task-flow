@@ -1,9 +1,9 @@
 name: Checking tests
-run-name: "${{ github.actor }} launched tests on  GitHub Actions 🚀"
+run-name: "${{ github.actor }} launched ci/cd on  GitHub Actions 🚀"
 
 on:
   pull_request:
-    branches: [ "develop" ]
+    branches: [ "main" ]
 
   workflow_dispatch:
     inputs:
@@ -22,7 +22,42 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build:
+  run-linter:
+    if: ${{ github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch' }}
+    timeout-minutes: 1
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: true
+      matrix:
+        os: ["ubuntu-latest"]
+        python-version: ["3.13"]
+
+    steps:
+      ########################################
+      #   Checkout repo and set-up python    #
+      ########################################
+      - name: Check out the repo
+        uses: actions/checkout@v4
+
+      - name: Setup Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+
+      ########################################
+      #   Install dependencies               #
+      ########################################
+      - name: Install dependencies
+        run: pip3 install --prefer-binary ruff
+
+      ########################################
+      # Run linter                           #
+      ########################################
+      - name: Run linter
+        run: ruff check .
+
+  testing:
     if: ${{ github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch' }}
     timeout-minutes: 10
     runs-on: ${{ matrix.os }}
@@ -49,7 +84,6 @@ jobs:
         image: redis:alpine
         ports:
          - 6379:6379
-
 
     steps:
       ##################################################

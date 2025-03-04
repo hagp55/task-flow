@@ -38,7 +38,7 @@ Keep track of your tasks, stay organized, and never forget important things!
 - **Sign in with phone number.**
 - **Sign in with Telegram.**
 
-- ⏳ **Set due dates for tasks** – schedule and manage deadlines effectively.
+- **Set due dates for tasks** – schedule and manage deadlines effectively.
 
 *Stay tuned for updates! More exciting features are on the way!*
 """

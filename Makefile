@@ -72,7 +72,7 @@ prod-up: ## Build and run all services
 	${DC} -f docker-compose.prod.yaml up --build -d
 
 prod-down: ## Build and run all services
-	${DC} -f docker-compose.prod.yaml up down
+	${DC} -f docker-compose.prod.yaml down
 
 
 # ALEMBIC MIGRATIONS
