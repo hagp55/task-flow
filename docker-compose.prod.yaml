@@ -57,11 +57,14 @@ services:
     container_name: nginx
     image: nginx
     volumes:
+      - www-html:/usr/share/nginx/html
+      - etc-letsencrypt:/etc/letsencrypt
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       - ./robots.txt:/etc/nginx/templates/robots.txt:ro
       - ./nginx/logs:/var/log/nginx
     ports:
     - "80:80"
+    - "443:443"
     restart: on-failure
     networks:
       - app_network
@@ -74,9 +77,22 @@ services:
       timeout: 5s
       start_period: 10s
 
+  certbot:
+    image: certbot/certbot
+    container_name: certbot
+    depends_on:
+      - nginx
+    volumes:
+      - etc-letsencrypt:/etc/letsencrypt
+      - www-html:/usr/share/nginx/html
+    command: certonly --webroot --webroot-path=/usr/share/nginx/html --email suntrope55@gmail.com --agree-tos --no-eff-email -d task-flow.space
+
+
 volumes:
   pg_data:
+  www-html:
   rabbitmq_data:
+  etc-letsencrypt:
 
 networks:
   app_network:
