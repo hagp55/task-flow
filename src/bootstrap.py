@@ -4,6 +4,7 @@ from contextlib import asynccontextmanager
 
 import uvloop
 from fastapi import FastAPI
+from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.responses import ORJSONResponse
 
 from src.apps import api_router
@@ -37,6 +38,7 @@ def _init_routers(app: FastAPI) -> None:
 
 def _init_middlewares(app: FastAPI) -> None:
     init_corse_middleware(app)
+    app.add_middleware(GZipMiddleware)
 
 
 def _init_admin(_app: FastAPI) -> None:
